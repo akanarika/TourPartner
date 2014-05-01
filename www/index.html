@@ -1,0 +1,1587 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <!-- S J T U L B S  -->
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>---GoogleGuess---</title>
+	<title></title>
+	<link rel="stylesheet" href="css/main.css">
+	<script type="text/javascript"
+		  src="js/jquery-1.5.2.min_.js">
+	</script>
+
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB0Z6g0rc6XJ4wxpfYw99bEiwwbGGwOJvM&sensor=false&language=zh-TW&libraries=places,geometry">
+    </script>
+
+    <script type="text/javascript" src="js/infoBox.js"></script>
+
+</head>
+<body>
+	<div id="wrapper">
+
+    <div id="headerToolbar">
+    	<div class="wrap">
+        	   <!--<div id="logoContainer">
+            	<img id="logo" src="img/portrait.jpg" width="40" height="40">
+            </div>-->
+             <div id="searchtitle"><p>SEARCH:</p></div>
+
+            <div id="inputContainer">
+             	<!-- <input type="text" id="speak" class="input"> -->
+                    <!-- <input id="pac-input" class="controls" type="text" placeholder="Search Box"> -->
+                <!-- <input type="text" id="location" class="input" placeholder="input a location" value="">
+                 --><!-- <button class="button" id="searchBtn" type="button">
+                	<img class="headerIcon" id="searchLoc" src="img/searchIcon.png">
+                </button> --><!--<input id="address" class="input" type="textbox" value="Sydney, NSW"> -->
+                <input id="location" class="input" type="textbox">
+                <div id="show"></div>
+                <!-- <button class = "button" id="search_btn">
+                  <img id="search" src="img/searchIcon.png">
+                </button> -->
+                <!-- <button onclick="search();">Search</button> -->
+            </div>
+            <div id="locationToolContainer">
+                <a href="#" class="a-btn" id="mark" onclick="mark()">
+                    <span class="a-btn-slide-text">地點標記</span>
+                    <img src="img/pinIcon.png" alt="Photos" />
+                </a>
+                <a href="#" class="a-btn" id="link">
+                    <span class="a-btn-slide-text">路線規劃</span>
+                    <img src="img/linkIcon.png" alt="Photos" />
+                </a>
+                <a href="#" class="a-btn" id="my">
+                    <span class="a-btn-slide-text">我的旅程</span>
+                    <img src="img/showmarkedIcon.png" alt="Photos" />
+                </a>
+                
+            </div>
+        </div>
+          
+    </div>
+   
+    <div id="mapview" class="wrap">
+      <div id="infoView" class="wrap">
+       <div id="infoOpt">
+        <!-- <button type="button" id="onfoot" style="height:50px; width:50px; margin:20px 5px 20px 5px">步行！</button>
+        <button type="button" id="byBus" style="height:50px; width:50px; margin:20px 5px 20px 5px">乘車！</button>
+        <button type="button" id="driving" style="height:50px; width:50px; margin:20px 5px 20px 5px">駕車！</button> -->
+        <div id="markList" type="text" style="height:520px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;">路線: </br></div>
+
+      </div>
+      <div id="infoBody">
+          <div id="infoMap">
+            </div>
+        </div>
+       
+        <div id="infoFooter">
+            <img id="imgTriangle" src="img/triangle_down.png"><br />
+            <img id="imgSCircle" src="img/circle_small.png"><br />
+            <img id="imgCricle" src="img/circle.png"><br />
+        </div>
+    </div>
+
+    <div id="mapCanvas"></div>
+    </div>
+    <div id="info"></div>
+	
+</body>
+
+<script type="text/javascript">
+    google.maps.event.addDomListener(window, 'load', initialize);
+    
+
+    var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+
+/**
+ * The HomeControl adds a control to the map that simply
+ * returns the user to Chicago. This constructor takes
+ * the control DIV as an argument.
+ */
+
+ //好多重複代碼………………
+
+    var map;
+    var iMap;
+    var geocoder;//地裡編碼
+    var infowindow;
+    var marker;
+    var markers = [];
+    var myMarkers = []; //标记
+    var myiMarkers = []; //infoMap上的
+    var content;
+    var service;
+    var note = "";
+    var notes = new Array(); //备注
+    /*var flightPlanCoordinates = [];*/
+    var preMark;
+    var paths = [];
+    window.infoBox = null;
+
+
+    var orMarkers = []; //连过线的mark
+    var nearMarkers = [];
+
+    var markcontent = $(".markcontent");
+
+    var infocontent = $(".infocontent");
+
+    var oldmark;
+    
+
+    function initialize(){
+            var myLatlng = new google.maps.LatLng(-34.397, 150.644);
+            
+            //var infowindows = [];
+            var mapOptions = {
+              //center: myLatlng,
+              //zoom: 10,
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              overviewMapControl: true
+            }
+            var infoMapOptions = {
+              center: new google.maps.LatLng(35.554498,139.6485728),    //以经纬度坐标(35.6992,139.7753)为中心显示地图，你可以改改看效果
+              zoom: 14,       //地图的缩放层级设为14
+              mapTypeControl: false,  //不显示地图类型控件
+              //styles: simplifiedStyle,
+              mapTypeControlOptions: {
+                   style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+              },
+               zoomControl: false, //显示地图缩放控件
+               zoomControlOptions: {
+                style: google.maps.ZoomControlStyle.SMALL //设置缩放控件的显示类型为简单
+                },
+              mapTypeId: google.maps.MapTypeId.ROADMAP    //设置地图显示类型为roadmap    
+            };
+
+            map = new google.maps.Map(document.getElementById("mapCanvas"), mapOptions);
+            iMap = new google.maps.Map(document.getElementById("infoBody"), infoMapOptions);
+
+            var defaultBounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(-33.8902, 151.1759),
+                new google.maps.LatLng(-33.8474, 151.2631));
+
+            map.fitBounds(defaultBounds);
+
+            var input = (document.getElementById('location'));
+            //var searchBox = new google.maps.places.SearchBox((input));
+
+            /*---autocomplete----*/
+            
+            var searchBox = new google.maps.places.SearchBox(input);
+
+            infowindow = new google.maps.InfoWindow();
+            service = new google.maps.places.PlacesService(map);
+
+            google.maps.event.addListener(searchBox, 'places_changed', function() {
+              map.setOptions({draggable:'default'});
+              window.places = searchBox.getPlaces();
+
+              
+
+              // For each place, get the icon, place name, and location.
+
+              for (var i = 0, marker; marker = markers[i]; i++) {
+                marker.setMap(null);
+              }
+              markers = [];
+              var bounds = new google.maps.LatLngBounds();
+              for (var i = 0, place; place = places[i]; i++) {
+                var image = {
+                  url: "img/dot_pin.png",//place.icon,
+                  size: new google.maps.Size(30, 30),
+                  origin: new google.maps.Point(0, 0),
+                  anchor: new google.maps.Point(12,12),//17,34
+                  scaledSize: new google.maps.Size(25, 25)
+                };
+
+                var request = {
+                  reference: place.reference
+                };
+                service.getDetails(request, function(place, status) {
+
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                  if(window.infoBox ){
+                        window.infoBox.close();
+                      };
+                    marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location,
+                    icon:image,
+                    title:place.name,
+                    //content:place.name+'</br>'+'<span style="font-weight:bold">地址:</span>'+place.formatted_address+'</br>'+'<span style="font-weight:bold">電話:</span>'+place.formatted_phone_number+'</br>'+'<span style="font-weight:bold">評分:</span>'+place.rating+'</br><button type="button" id="near" onclick="nearby()">附近</button>'+'<button type="button" id="infomark" onclick="markthis()">标记</button>'
+                    content:
+
+                    
+
+                    '<div class="infocontent">'+'<img src="img/infoboxbg.png" id="imgbg">'+'<img src="img/near.png" id="img">'+'<img src="img/pin.png" id="img0" onclick="">'+
+
+                    '<div id="name">' +place.name+'</div>' + '<div id="address">'+place.formatted_address+'</div>'+'</div>'+'<div>'+
+
+                    '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+'<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                    
+
+                    +'<div class="markcontent">'
+
+                    +'<img src="img/infoboxbg1.png" id="imgbg1">'
+                    +'<div id="addmarktitle">ADD MY MARK</div>'
+                    +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ place.name +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
+                  });
+
+
+                  for(var i=0, imark; imark=nearMarkers[i]; i++){
+      nearMarkers[i].setMap(null);
+    }
+    nearMarkers.splice(0,markers.length);
+                  markers.push(marker);
+                  google.maps.event.addListener(marker, 'click', function() {
+
+                     if(window.infoBox ){
+                        window.infoBox.close();
+                      };
+
+                    window.infoBox  = new InfoBox({     //此处修改，原来是：var infoBox = = new InfoBox({,去掉var 意思是不要定义新的局部变量，继续使用原全局变量
+                  latlng: this.getPosition(),
+                  map: map,
+                  content: this.content
+              });
+
+            //window.infoBox .content = '<div class="infocontent">'+'<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+'<img src="img/infoboxbg.png" id="imgbg">'+'<img src="img/near.png" id="img">'+'<img src="img/pin.png" id="img0">'+'<div class="cn-wrapper" id="cn-wrapper">'+'<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'+'<div id="name">' +this.title+'</div>' + '<div id="address">'+this.html+'</div>'+'</div>'+'<div class="markcontent">'+'<img src="img/infoboxbg1.png" id="imgbg1">'+'<div id="addmarktitle">ADD MY MARK</div>'+'<div id="name1">Name:' +'<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ locInfo.name +'">'+'</div>'+'<div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>';
+                   //infowindow.setContent(this.content);
+                   //infowindow.open(map, this);
+                    preMark = this;
+                  });
+
+                }
+              });
+                bounds.extend(place.geometry.location);
+              }
+
+              map.fitBounds(bounds);
+            });
+
+            // Bias the SearchBox results towards places that are within the bounds of the
+            // current map's viewport.
+            google.maps.event.addListener(map, 'bounds_changed', function() {
+              var bounds = map.getBounds();
+              searchBox.setBounds(bounds);
+            });
+
+            /*----autocomplete_end------*/
+
+            /*------direction-----------*/
+            
+   
+            /*--------direction_end---------*/
+
+            map.setOptions({draggableCursor:'default'});
+
+}
+
+
+//--------------marker--------------
+//var imark;
+//var position;
+var name;
+var newmark;
+
+//var index=0;
+/*var infowindow;*/
+var markIcon = {
+              url: "img/mark_pin.png",//place.icon,
+              size: new google.maps.Size(30, 30),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(12,12),//17,34
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+
+function mark(){
+    google.maps.event.clearListeners(map,'click');
+    
+    for(var i=0,imark; imark=markers[i];i++){
+        google.maps.event.clearListeners(imark,'click');
+    }
+
+    map.setOptions({draggableCursor:'url(img/push-pin.png),move'});
+
+    google.maps.event.addListener(map, 'click', function(event){
+      note = "";
+      $(document).undelegate("#save-button","click");
+      $(document).undelegate("#cancel-button","click");
+      var position = (event.latLng);
+      var lat = position.lat();
+      var lng = position.lng();
+      
+      preMark = new google.maps.Marker({
+          icon: markIcon,
+          map: map,
+          note: [],
+          position: position,
+          title: "自定義地點",
+          content: '<div class="infocontent2">'+'<img src="img/infoboxbg.png" id="imgbg">'+'<img src="img/near.png" id="img">'+'<img src="img/pin.png" id="img0" onclick="">'+
+
+                    '<div class="cn-wrapper" id="cn-wrapper">'+'<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+'<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                    +
+
+                    '<div id="name">' +'name'+'</div>' + '<div id="address">'+'place.formatted_address'+'</div>'+'</div>'
+
+                    +'<div class="markcontent2">'
+
+                    +'<img src="img/infoboxbg1.png" id="imgbg1">'
+                    +'<div id="addmarktitle">ADD MY MARK</div>'
+                    +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ '自定义地点' +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'
+          //zIndex: index
+      });
+
+      if(window.infoBox ){
+          window.infoBox.close();
+      };
+
+      window.infoBox = new InfoBox({
+        latlng:position,
+        map:map,
+        content:preMark.content
+      });
+
+      for(var i=0,imark; imark=markers[i];i++){
+        imark.setCursor('pointer');
+        google.maps.event.clearListeners(imark,'click');
+        //google.maps.event.clearListeners(imark,'mouseover');
+      }
+      google.maps.event.clearListeners(map,'click');
+      //$(".markcontent").css('visibility','visible');
+      $(document).delegate("#save-button","click",function(){
+          preMark.title = $("#nameinput").attr("value");
+          console.log(preMark.title);
+          note = $("#noteinput").attr("value");
+          if(note!="")preMark.note.push(note);
+          preMark.content = 
+                        
+                        '<div class="infocontent">'
+                        +
+                        '<div class="cn-wrapper" id="cn-wrapper">'+
+                      '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
+
+                       '<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                        
+                        +
+                        '<div class="notecontent">'+
+                      '<img src="img/infoboxbg.png" id="imgbg">'+
+                      '<img src="img/near.png" id="img">'+
+
+                      '<img src="img/edit.png" id="img5" onclick="">'+
+                      '<img src="img/delete.png" id="img6" onclick="">'+
+
+                      '<div id="notetitle">' +preMark.title+'</div>' + '<div id="notenote">Note: '+preMark.note+'</div>'+'</div>'+'<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ preMark.note +'">'+'<button id="noteedit_btn" class="noteedit" style="visibility:hidden"></button>'+'</div>'+'</div>';
+
+          myMarkers.push(preMark);
+          var inewmarker = new google.maps.Marker({
+                      icon: markIcon,
+                      map: iMap,
+                      position: position,
+                      title: preMark.title
+                      //zIndex: index
+          });
+          myiMarkers.push(inewmarker);
+
+          
+          // myMarkers[myMarkers.length-1].title = preMark;
+          //inewmarker.title = 
+          fitBoundsFor(myMarkers,iMap);
+          //index++;
+          
+          if(window.infoBox){
+              window.infoBox.close();
+          };
+          window.infoBox = new InfoBox({
+                      latlng:preMark.position,
+                      map:map,
+                      content: preMark.content
+                    });
+
+         markend();
+      
+
+
+      });
+      
+
+      $(document).delegate("#cancel-button","click",function(){
+        preMark.setMap(null);
+        preMark = null;
+        if(window.infoBox ){
+              window.infoBox.close();
+          };
+        markend();
+      });
+
+      map.setOptions({draggableCursor:'default'});
+    });
+/*-----mark上标记---------*/
+
+    for(var i=0,imark; imark=markers[i];i++){
+      imark.setCursor('url(img/push-pin2.png),move');
+      /*google.maps.event.addListener(imark, 'mouseover', function(){
+        preMark = this;
+        if(window.infoBox){window.infoBox.close();}
+          window.infoBox  = new InfoBox({     //此处修改，原来是：var infoBox = = new InfoBox({,去掉var 意思是不要定义新的局部变量，继续使用原全局变量
+                  latlng: preMark.getPosition(),
+                  map: map,
+                  content: preMark.content
+              });
+      });*/
+
+      google.maps.event.addListener(imark, 'click', function(){
+        note = "";
+        for(var i=0,imark; imark=markers[i];i++){
+        imark.setCursor('pointer');
+        google.maps.event.clearListeners(imark,'click');
+        //google.maps.event.clearListeners(imark,'mouseover');
+ 
+
+      }
+      google.maps.event.clearListeners(map,'click');
+
+
+          $(document).undelegate("#save-button","click");
+          $(document).undelegate("#cancel-button","click");
+          preMark = new google.maps.Marker({
+                      icon: markIcon,
+                      map: map,
+                      note: [],
+                      position: this.position,
+                      title: this.title,
+                      zIndex: 99,
+                      content: //this.content
+                      /*'<div class="infocontent">'+'<img src="img/infoboxbg.png" id="imgbg">'+'<img src="img/near.png" id="img">'+'<img src="img/pin.png" id="img0" onclick="">'+'<div id="name">' +'name'+'</div>' + '<div id="address">'+'place.formatted_address'+'</div>'+'</div>'+
+
+                    '<div class="cn-wrapper" id="cn-wrapper">'+'<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+'<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'*/
+
+                    '<div class="markcontent2">'
+
+                    +'<img src="img/infoboxbg1.png" id="imgbg1">'
+                    +'<div id="addmarktitle">ADD MY MARK</div>'
+                    +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ this.title +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+""+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
+
+                      //zIndex: index
+          });
+
+          if(window.infoBox ){
+          window.infoBox.close();
+          };
+
+          window.infoBox = new InfoBox({
+            latlng:preMark.position,
+             map:map,
+            content:preMark.content
+          });
+
+          //$(".markcontent").css('visibility','visible');
+          //$(".infocontent").css('visibility','hidden');
+
+
+          /*var inewmark = new google.maps.Marker({
+                      icon: markIcon,
+                      map: iMap,
+                      position: this.position,
+                      title: this.title,
+                      content: preMark.content
+                      //zIndex: index
+          });*/ 
+          oldmark = this;
+          this.setMap(null);
+          //notes.push("");
+          //places.splice(i,1);
+          //markers.splice(i,1);
+          //myMarkers.push(newmark);
+          //myiMarkers.push(inewmark);
+          
+          //var note = prompt(this.title+"\n請輸入備註:","");
+          //notes[newmark.zIndex] = note;
+          //fitBoundsFor(myMarkers,iMap);
+          //index++;
+          //if(note!="")newmark.note.push(note);
+          
+         //preMark = newmark;
+         
+         
+         $(document).delegate("#save-button","click",function(){
+          preMark.title = $("#nameinput").attr("value");
+          console.log(preMark.title);
+          note = $("#noteinput").attr("value");
+          if(note!="")preMark.note.push(note);
+          preMark.content = 
+                        
+                        '<div class="infocontent">'+
+
+
+                        '<div class="cn-wrapper" id="cn-wrapper">'+
+                      '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
+                      
+                       '<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'+
+                        '<div class="notecontent">'+
+                      '<img src="img/infoboxbg.png" class="notecontent" id="imgbg">'+
+                      '<img src="img/near.png" class="notecontent" id="img">'+
+
+                      '<img src="img/edit.png" class="notecontent" id="img5" onclick="">'+
+                      '<img src="img/delete.png" class="notecontent" id="img6" onclick="">'+
+
+                      '<div id="notetitle" class="notecontent" >' +preMark.title+'</div>' + '<div id="notenote" class="notecontent" >Note: '+preMark.note+'</div>'+'</div>'+
+                      '<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ preMark.note +'">'+'<button id="noteedit_btn"  class="noteedit" style="visibility:hidden"></button>'+'</div>'
+                      ;
+
+          myMarkers.push(preMark);
+
+          var inewmarker = new google.maps.Marker({
+                      icon: markIcon,
+                      map: iMap,
+                      position: preMark.position,
+                      title: preMark.title
+                      //zIndex: index
+          });
+
+          myiMarkers.push(inewmarker);
+          places.splice(i,1);
+          markers.splice(i,1);
+
+
+          
+          // myMarkers[myMarkers.length-1].title = preMark;
+          //inewmarker.title = 
+          fitBoundsFor(myMarkers,iMap);
+          //index++;
+          
+          if(window.infoBox ){
+              window.infoBox.close();
+          };
+          window.infoBox = new InfoBox({
+                      latlng:preMark.position,
+                      map:map,
+                      content: preMark.content
+                    });
+
+         
+      markend();
+
+
+      });
+      
+      $(document).delegate("#cancel-button","click",function(){
+        preMark.setMap(null);
+        preMark = null;
+        oldmark.setMap(map);
+        if(window.infoBox ){
+              window.infoBox.close();
+          };
+        markend();
+      });
+
+      map.setOptions({draggableCursor:'default'});
+
+
+      
+      }); 
+      map.setOptions({draggableCursor:'default'});           
+       
+    }         
+
+    /*google.maps.event.addListener(map, 'rightclick', function(){
+      for(var i=0,imark; imark=markers[i];i++){
+        imark.setCursor('pointer');
+        google.maps.event.clearListeners(imark,'click');
+        google.maps.event.clearListeners(imark,'mouseover');
+        google.maps.event.clearListeners(map,'click');
+        google.maps.event.addListener(imark, 'click', function(){
+                    /*window.infoBox.setContent(this.content);
+                    window.infoBox.open(map, this);
+                    */
+                    /*若infoBox有,可直接用以上函数,每次都new会不会很费空间？*/
+                    /*if(window.infoBox ){
+                        window.infoBox.close();
+                      };
+                    window.infoBox = new InfoBox({
+                      latlng:this.position,
+                      map:map,
+                      content:this.content
+                    });
+                    preMark = this;
+                  });
+      } */
+      /*map.setOptions({draggableCursor:'default'});
+      for(var i=0,imark; imark=myMarkers[i];i++){
+        google.maps.event.addListener(imark, 'click', function() {
+                    preMark = this;
+
+                   if(window.infoBox ){
+                        window.infoBox .close();
+                      };
+                    window.infoBox = new InfoBox({
+                      latlng:this.getPosition(),
+                      map:map,
+                      content:'<div class="infocontent">'+
+                        '<div class="cn-wrapper" id="cn-wrapper">'+
+                      '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
+
+                       '<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                        +
+
+                      '<img src="img/infoboxbg.png" id="imgbg">'+
+                      '<img src="img/near.png" id="img">'+
+
+                      '<img src="img/edit.png" id="img5" onclick="">'+
+                      '<img src="img/delete.png" id="img6" onclick="">'+
+
+                      '<div id="title">' +this.title+'</div>' + '<div id="note">Note: '+this.note+'</div>'+'</div>'
+
+                    });
+                  });
+      }
+      map.setOptions({draggableCursor:'default'});           
+    });*/
+}
+
+function markend(){
+  google.maps.event.clearListeners(map,'click');
+
+      /*-------mark 后关闭功能---------*/
+        console.log("ad");
+        for(var i=0,imark; imark=markers[i];i++){
+        imark.setCursor('pointer');
+        google.maps.event.clearListeners(imark,'click');
+        google.maps.event.clearListeners(imark,'mouseover');
+        google.maps.event.addListener(imark, 'click', function(){
+                    /*window.infoBox.setContent(this.content);
+                    window.infoBox.open(map, this);
+                    */
+                    /*若infoBox有,可直接用以上函数,每次都new会不会很费空间？*/
+                    if(window.infoBox ){
+                        window.infoBox.close();
+                      };
+                    window.infoBox = new InfoBox({
+                      latlng:this.position,
+                      map:map,
+                      content:this.content
+                    });
+                    preMark = this;
+                  });
+
+      }
+      //map.setOptions({draggableCursor:'default'});
+      //map.setOptions({draggableCursor:'default'});
+      
+      for(var i=0,imark; imark=myMarkers[i];i++){
+        google.maps.event.addListener(imark, 'click', function() {
+                    preMark = this;
+
+                   if(window.infoBox ){
+                        window.infoBox.close();
+                      };
+                    window.infoBox = new InfoBox({
+                      latlng:this.getPosition(),
+                      map:map,
+                      content:
+                       
+
+                      '<div class="infocontent">'+
+
+                       '<div class="cn-wrapper" id="cn-wrapper">'+
+                      '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
+
+                       '<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                        +
+                        '<div class="notecontent">'+
+                      '<img class="notecontent"  src="img/infoboxbg.png" id="imgbg">'+
+                      '<img class="notecontent" src="img/near.png" id="img">'+
+
+                      '<img class="notecontent" src="img/edit.png" id="img5" onclick="">'+
+                      '<img class="notecontent" src="img/delete.png" id="img6" onclick="">'+
+
+                      '<div class="notecontent" id="notetitle">' +this.title+'</div>' + '<div class="notecontent" id="notenote">Note: '+this.note+'</div>'+'</div>'+
+                      '<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ this.note +'">'+'<button id="noteedit_btn" class="noteedit" style="visibility:hidden"></button>'+'</div>'
+
+                    });
+                  });
+      }
+      map.setOptions({draggableCursor:'default'}); 
+}
+
+
+function markthis(){
+
+  for(var i=0,imark; imark=markers[i];i++){
+        imark.setCursor('pointer');
+        google.maps.event.clearListeners(imark,'click');
+        //google.maps.event.clearListeners(imark,'mouseover');
+      }
+      google.maps.event.clearListeners(map,'click');
+
+          $(document).undelegate("#save-button","click");
+          $(document).undelegate("#cancel-button","click");
+          oldmark = preMark;
+          preMark.setMap(null);
+          var newMark = new google.maps.Marker({
+                      icon: markIcon,
+                      map: map,
+                      note: [],
+                      position: preMark.position,
+                      title: preMark.title,
+                      content: preMark.content
+                      //zIndex: index
+          });
+
+          $(document).delegate("#save-button","click",function(){
+          newMark.title = $("#nameinput").attr("value");
+          console.log(preMark.title);
+          note = $("#noteinput").attr("value");
+          if(note!="")newMark.note.push(note);
+          newMark.content = 
+                        
+                         '<div class="infocontent">'+
+
+                         '<div class="cn-wrapper" id="cn-wrapper">'+
+                      '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
+
+                       '<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                        +
+                        '<div class="notecontent">'+
+                      '<img src="img/infoboxbg.png" id="imgbg">'+
+                      '<img src="img/near.png" id="img">'+
+
+                      '<img src="img/edit.png" id="img5" onclick="">'+
+                      '<img src="img/delete.png" id="img6" onclick="">'+
+
+                       '<div class="notecontent">'+
+                      '<div id="notetitle">' +newMark.title+'</div>' + '<div id="notenote">Note: '+newMark.note+'</div>'+'</div>'+'<input type="text" style="visibility:hidden" id="noteedit" class="nameinput" placeholder="" value="'+ newMark.note +'">'
+                      +'</div>'+
+                      '<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ preMark.note +'">'+'<button id="noteedit_btn" class="noteedit" style="visibility:hidden"></button>'+'</div>';
+
+          myMarkers.push(newMark);
+
+          var inewmarker = new google.maps.Marker({
+                      icon: markIcon,
+                      map: iMap,
+                      position: preMark.position,
+                      title: preMark.title
+                      //zIndex: index
+            });
+
+          myiMarkers.push(inewmarker);
+          //places.splice(i,1);
+          //markers.splice(i,1);
+          
+          // myMarkers[myMarkers.length-1].title = preMark;
+          //inewmarker.title = 
+          fitBoundsFor(myMarkers,iMap);
+          //index++;
+          
+          if(window.infoBox ){
+              window.infoBox.close();
+          };
+          window.infoBox = new InfoBox({
+                      latlng:newMark.position,
+                      map:map,
+                      content: newMark.content
+                    });
+          preMark = newMark;
+         
+      markend();
+
+
+      });
+      
+      $(document).delegate("#cancel-button","click",function(){
+        preMark.setMap(null);
+        preMark = null;
+        oldmark.setMap(map);
+        if(window.infoBox ){
+              window.infoBox.close();
+          };
+        markend();
+      });
+
+      map.setOptions({draggableCursor:'default'});
+
+
+          /*google.maps.event.addListener(newmark, 'click', function() {
+                    preMark = this;
+                   if(window.infoBox ){
+                        window.infoBox .close();
+                      };
+                    window.infoBox = new InfoBox({
+                      latlng:this.getPosition(),
+                      map:map,
+                      content:
+                      '<div class="infocontent">'+
+                      '<div class="cn-wrapper" id="cn-wrapper">'+
+                      '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+'<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                        +
+
+
+
+                      '<img src="img/infoboxbg.png" id="imgbg">'+
+                      '<img src="img/near.png" id="img">'+
+                      '<img src="img/edit.png" id="img5" onclick="">'+
+                      '<img src="img/delete.png" id="img6" onclick="">'+'<div id="title">' 
+                      +this.title+'</div>' + 
+                      '<div id="note">Note: '+this.note+'</div>'+'</div>'
+                    });
+                  });*/
+
+}
+
+
+var circle;
+var close;
+var canteen;
+var hotel;
+
+$(document).delegate("#cn-button","click", function(){
+  $(".notecontent").css("visibility","hidden");
+  $(".noteedit").css("visibility","hidden");
+  if($(this).hasClass("cn-button-notclicked"))
+    {
+      console.log("1");
+      $(this).toggleClass("cn-button-notclicked cn-button-clicked");
+      $("#img1").animate({
+        top: '80px',
+        left: '-90px',
+        width: '55px',
+        height: '55px'
+        }, 500);
+      $("#img2").animate({
+        top: '80px',
+        left: '80px',
+        width: '55px',
+        height: '55px'
+        }, 500);
+      $("#img3").animate({
+        top: '40px',
+        left: '-5px',
+        width: '55px',
+        height: '55px'
+        }, 500);
+      $("#img4").animate({
+        width: '204px',
+        height: '204px'
+      }, 100);  
+      $("#imgbg").css({
+        'visibility':'hidden'
+        });
+      $("#img").css({
+        'visibility':'hidden'
+        });
+      $("#name").css({
+        'visibility':'hidden'
+        });
+      $("#address").css({
+        'visibility':'hidden'
+        });
+      
+
+            
+    }
+    else if($(this).hasClass("cn-button-clicked"))
+    {
+      nearclose(this);
+    }
+});
+
+function nearclose(a){
+  $(".notecontent").css("visibility","visible");
+  $(a).toggleClass("cn-button-clicked cn-button-notclicked");
+      $("#img1").animate({
+        top: '135px',
+        left: '-5px',
+        width: '0px',
+        height: '0px'
+        }, 100);
+      $("#img2").animate({
+        top: '135px',
+        left: '-5px',
+        width: '0px',
+        height: '0px'
+        }, 100);
+      $("#img3").animate({
+        top: '135px',
+        left: '-5px',
+        width: '0px',
+        height: '0px'
+        }, 100);
+      $("#img4").animate({
+        width: '0px',
+        height: '0px'
+      }, 100);
+      $("#imgbg").css({
+        'visibility':'visible'
+        });
+      $("#img").css({
+        'visibility':'visible'
+        });
+      $("#name").css({
+        'visibility':'visible'
+        });
+      $("#address").css({
+        'visibility':'visible'
+        });
+
+}
+
+
+
+
+var nearRequest = null;
+$(document).delegate("#img1","click",function(){
+  //nearRequest = 
+  nearclose($("#cn-button"));
+  nearRequest = 'shopping';
+  nearby();
+});
+$(document).delegate("#img2","click",function(){
+  //nearRequest = 
+  nearclose($("#cn-button"));
+  nearRequest = 'hotel';
+  nearby();
+});
+$(document).delegate("#img3","click",function(){
+  //nearRequest = 
+  nearclose($("#cn-button"));
+  nearRequest = 'restaurant';
+  nearby();
+});
+
+function nearby(){
+    
+
+  for(var i=0, imark; imark=nearMarkers[i]; i++){
+      nearMarkers[i].setMap(null);
+  }
+
+
+
+    nearMarkers.splice(0,markers.length);
+    map.setCenter(preMark.position);
+    
+    var request = {
+              location: preMark.position,
+              radius: '500',
+              query: nearRequest//'restaurant'
+    };
+
+              var service2 = new google.maps.places.PlacesService(map);
+
+              service2.textSearch(request, function(results,status) {
+              if (status != google.maps.places.PlacesServiceStatus.OK) {
+                alert("沒有哇！")
+                 return;
+                }
+
+                for(var i=0; i<results.length; i++){
+
+                    marker = new google.maps.Marker({
+                    map: map,
+                    position: results[i].geometry.location,
+                    icon:("img/circle_pin.png"),
+                    title:results[i].name,
+                    content:
+                    
+
+
+                    
+                    '<div class="infocontent">'+
+
+                    '<div class="cn-wrapper" id="cn-wrapper">'
+
+                    +
+
+                    '<img src="img/infoboxbg.png" id="imgbg">'+'<img src="img/near.png" id="img">'+'<img src="img/pin.png" id="img0" onclick="markthis()">'+
+
+                    '<div id="name">' +results[i].name+'</div>' + '<div id="address">'+results[i].formatted_address
+                    +'</div>'
+
+                    +
+
+                    '</div>'+
+
+                    '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+'<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
+                    
+
+                    +'<div class="markcontent">'+'<img src="img/infoboxbg1.png" id="imgbg1">'+'<div id="addmarktitle">ADD MY MARK</div>'+'<div id="name1">Name:' +'<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ results[i].name +'">'+'</div>'+'<div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
+
+                    /*results[i].name+'</br>'+'<span style="font-weight:bold">地址:</span>'+results[i].formatted_address+'</br>'+'<span style="font-weight:bold">電話:</span>'+results[i].formatted_phone_number+'</br>'+'<span style="font-weight:bold">評分:</span>'+results[i].rating+'</br><button type="button" id="near" onclick="nearby()">附近</button>'+'<button type="button" id="infomark" onclick="markthis()">标记</button>'*/
+                    });
+
+                  markers.push(marker);
+                  nearMarkers.push(marker);
+                  google.maps.event.addListener(marker, 'click', function() {
+                    if(window.infoBox ){
+                        window.infoBox.close();
+                      };
+                    window.infoBox = new InfoBox({
+                      latlng:this.position,
+                      map:map,
+                      content:this.content
+                    });
+                    preMark = this;
+                  });
+
+                  map.setZoom(16);
+                  map.setCenter(preMark.position);
+                }
+              });
+
+}
+
+
+$(document).delegate("#img0","click", function(){
+    $(".markcontent").css(
+      'visibility','visible');
+
+    $(".infocontent").css(
+      'visibility','hidden');
+
+    markthis();
+});
+
+$(document).delegate("#img5","click", function(){
+  $("#noteedit").css(
+      'visibility','visible');
+  $("#noteedit_btn").css(
+      'visibility','visible');
+  $("#notenote").css(
+      'visibility','hidden');
+});
+
+$(document).delegate("#noteedit_btn","click", function(){
+  for(var i=0, imark; imark = myMarkers[i]; i++){
+    if(preMark == imark){
+      imark.note = $("#noteedit").attr("value");
+      
+      imark.content = 
+                        '<div class="infocontent">'+
+
+
+                        '<div class="cn-wrapper" id="cn-wrapper">'+
+                      '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
+                      
+                       '<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'+
+                        '<div class="notecontent">'+
+                      '<img src="img/infoboxbg.png" class="notecontent" id="imgbg">'+
+                      '<img src="img/near.png" class="notecontent" id="img">'+
+
+                      '<img src="img/edit.png" class="notecontent" id="img5" onclick="">'+
+                      '<img src="img/delete.png" class="notecontent" id="img6" onclick="">'+
+
+                      '<div id="notetitle" class="notecontent" >' +imark.title+'</div>' + '<div id="notenote" class="notecontent" >Note: '+imark.note+'</div>'+'</div>'+
+                      '<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ imark.note +'">'+'<button id="noteedit_btn"  class="noteedit" style="visibility:hidden"></button>'+'</div>';
+        window.infoBox.close();
+        window.infoBox = new InfoBox({
+                      latlng:imark.position,
+                      map:map,
+                      content:imark.content
+                    });
+        preMark = imark;
+    }
+  }
+  //preMark.note = $("#noteedit").attr("value");
+   $("#noteedit").css(
+      'visibility','hidden');
+  $("#noteedit_btn").css(
+      'visibility','hidden');
+  $("#notenote").css(
+      'visibility','visible');
+});
+
+$(document).delegate("#img6","click", function(){
+  for(var i=0, imark; imark = myMarkers[i]; i++){
+    if(preMark == imark){
+          window.infoBox.close();
+          imark.setMap(null);
+          myMarkers.splice(i,1);  
+      }
+    }
+});
+
+
+
+
+//$(document).delegate("")
+
+/*function nearby(){
+  if(window.infoBox ){
+    window.infoBox .close();
+  };
+
+    for(var i=0, imark; imark=nearMarkers[i]; i++){
+      nearMarkers[i].setMap(null);
+    }
+    nearMarkers.splice(0,markers.length);
+    if(circle!=null){circle.setMap(null);canteen.setMap(null);hotel.setMap(null)}
+    //map.setZoom(16);
+    map.setCenter(preMark.position);
+    var image = new google.maps.MarkerImage("img/circle1.png",
+        // This marker is 20 pixels wide by 32 pixels tall.
+        null, 
+        // The origin for this image is 0,0.
+        new google.maps.Point(0,0),
+        // The anchor for this image is the base of the flagpole at 0,32.
+        new google.maps.Point(205/2,202/2)
+    );
+    circle = new google.maps.Marker({
+          icon:image,
+          position: preMark.position,
+          map: map,
+          clickable: false
+      });
+
+
+    var image1 = new google.maps.MarkerImage("img/close.png",
+        // This marker is 20 pixels wide by 32 pixels tall.
+        null, 
+        // The origin for this image is 0,0.
+        new google.maps.Point(0,0),
+        // The anchor for this image is the base of the flagpole at 0,32.
+        new google.maps.Point(85/2,85/2)
+    );
+    close = new google.maps.Marker({
+          icon:image1,
+          position: preMark.position,
+          map: map,
+          title:"关闭",
+          clickable: true
+      });
+
+
+    var image2 = new google.maps.MarkerImage("img/canteen.png",
+        // This marker is 20 pixels wide by 32 pixels tall.
+        null, 
+        // The origin for this image is 0,0.
+        new google.maps.Point(0,0),
+        // The anchor for this image is the base of the flagpole at 0,32.
+        new google.maps.Point(210/2,172/2)
+    );
+    canteen = new google.maps.Marker({
+          icon:image2,
+          position: preMark.position,
+          map: map,
+          title:"餐厅",
+          clickable: true,
+          optimized: false,
+          raiseOnDrag: true
+      });
+
+    var image3 = new google.maps.MarkerImage("img/hotel.png",
+        // This marker is 20 pixels wide by 32 pixels tall.
+        null, 
+        // The origin for this image is 0,0.
+        new google.maps.Point(0,0),
+        // The anchor for this image is the base of the flagpole at 0,32.
+        new google.maps.Point(-95/2,172/2)
+    );
+
+    hotel = new google.maps.Marker({
+          icon:image3,
+          position: preMark.position,
+          map: map,
+          title:"酒店",
+          clickable: true,
+          optimized: false,
+          raiseOnDrag: true
+    });
+
+    infowindow.close(map,marker);
+    google.maps.event.addListener(circle, 'click', function() {circle.setMap(null);close.setMap(null);canteen.setMap(null);hotel.setMap(null)});
+    google.maps.event.addListener(canteen, 'click', function() {
+              var request = {
+              location: preMark.position,
+              radius: '500',
+              query: 'restaurant'
+              };
+              var service2 = new google.maps.places.PlacesService(map);
+              service2.textSearch(request, function(results,status) {
+              if (status != google.maps.places.PlacesServiceStatus.OK) {
+                alert("沒有哇！")
+                 return;
+                }
+                for(var i=0; i<results.length; i++){
+                    marker = new google.maps.Marker({
+                    map: map,
+                    position: results[i].geometry.location,
+                    icon:("img/circle_pin.png"),
+                    title:results[i].name,
+                    content:results[i].name+'</br>'+'<span style="font-weight:bold">地址:</span>'+results[i].formatted_address+'</br>'+'<span style="font-weight:bold">電話:</span>'+results[i].formatted_phone_number+'</br>'+'<span style="font-weight:bold">評分:</span>'+results[i].rating+'</br><button type="button" id="near" onclick="nearby()">附近</button>'+'<button type="button" id="infomark" onclick="markthis()">标记</button>'
+                  });
+                  markers.push(marker);
+                  nearMarkers.push(marker);
+                  google.maps.event.addListener(marker, 'click', function() {
+                    infowindow.setContent(this.content);
+                    infowindow.open(map, this);
+                    preMark = this;
+                  });
+                  map.setZoom(16);
+                  map.setCenter(preMark.position);
+                  circle.setMap(null);canteen.setMap(null);hotel.setMap(null);
+                }
+/*                if (pagination.hasNextPage) {
+                  resultList.button.onClick = pagination.nextPage;
+                }*/
+/*              });
+            });
+      
+      google.maps.event.addListener(hotel, 'click', function() {
+              var request = {
+              location: preMark.position,
+              radius: '500',
+              query: 'room'
+              };
+              var service2 = new google.maps.places.PlacesService(map);
+              service2.textSearch(request, function(results,status) {
+              if (status != google.maps.places.PlacesServiceStatus.OK) {
+                alert("沒有哇！")
+                 return;
+                }
+                for(var i=0; i<results.length; i++){
+                    marker = new google.maps.Marker({
+                    map: map,
+                    position: results[i].geometry.location,
+                    icon:("img/circle_pin.png"),
+                    title:results[i].name,
+                    content:results[i].name+'</br>'+'<span style="font-weight:bold">地址:</span>'+results[i].formatted_address+'</br>'+'<span style="font-weight:bold">電話:</span>'+results[i].formatted_phone_number+'</br>'+'<span style="font-weight:bold">評分:</span>'+results[i].rating+'</br><button type="button" id="near" onclick="nearby()">附近</button>'+'<button type="button" id="infomark" onclick="markthis()">标记</button>'
+                  });
+                  markers.push(marker);
+                  nearMarkers.push(marker);
+                  google.maps.event.addListener(marker, 'click', function() {
+                    infowindow.setContent(this.content);
+                    infowindow.open(map, this);
+                    preMark = this;
+                  });
+                  map.setZoom(16);
+                  map.setCenter(preMark.position);
+                  circle.setMap(null);canteen.setMap(null);hotel.setMap(null);
+                }
+              });
+            });  
+}*/
+
+$("#infoFooter").click(function() {   //小地图下拉
+    var infoView = $("#infoView");
+    if(infoView.css("top") < "0")
+    {
+      infoView.animate({top:"0px"}); 
+    }
+    else
+    {
+      infoView.animate({top:"-630px"});
+      
+    }
+  });
+
+var linkOpen;
+var last;
+var next;
+$("#link").click(function() {   //小地图下拉
+    var infoView = $("#infoView");
+    if(infoView.css("top") < "0")
+    {
+      infoView.animate({top:"0px"});
+
+    }
+    for(var i=0; i<myiMarkers.length;i++){
+      google.maps.event.addListener(myiMarkers[i], 'mouseover', function() {
+                    preMark = this;
+                    infowindow.setContent(this.title+'</br><span style="font-weight:bold">notes:</span>'+notes[this.zIndex]+'</br><button type="button" id="near" onclick="nearby()">附近</button>');
+                    infowindow.open(iMap, this);
+      });
+    }
+    linkOpen = true;
+    if(linkOpen = true){
+      for(var i=0; imark = myiMarkers[i]; i++){
+      google.maps.event.addListener(imark,'click',function(){
+        if(last == null){last = this;}
+        else{
+            next = this;
+            var request = {
+            origin: last.position,
+            destination: next.position,
+            //waypoints: waypts,
+            optimizeWaypoints: false,//是否按顺序
+            travelMode: "TRANSIT",
+            transitOptions: {departureTime: new Date(1337675679473)},
+            };
+
+            var directionsService = new google.maps.DirectionsService();
+            directionsService.route(request, function(response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+          var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true,
+          preserveViewport: true,
+          suppressInfoWindows: true,
+          panel: document.getElementById("markList")});
+          directionsDisplay.setDirections(response);
+          directionsDisplay.setMap(iMap);
+          //a.push(directionsDisplay);
+          var route = response.routes[0];
+          route0 = response.routes;
+
+          //var summaryPanel = document.getElementById('markList');
+          }
+          });
+
+          }
+          last = this;
+      });
+       }
+    }
+    google.maps.event.addListener(iMap,'rightclick',function(){
+      for(var i=0,imark; imark=myiMarkers[i];i++){
+      google.maps.event.clearListeners(imark,'click');}
+      for(var i=0,imark; imark=myiMarkers[i];i++){
+        google.maps.event.addListener(imark, 'click', function() {
+                    preMark = this;
+                    infowindow.setContent(this.title+'</br><span style="font-weight:bold">notes:</span>'+notes[this.zIndex]+'</br><button type="button" id="near" onclick="nearby()">附近</button>');
+                    infowindow.open(map, this);
+                  });
+      }
+      });
+    /*var start = orMarkers[i-1].position;
+      var end = orMarkers[i].position;
+    var request = {
+      origin: start,
+      destination: end,
+      //waypoints: waypts,
+      optimizeWaypoints: false,//是否按顺序
+      travelMode: mode,
+      transitOptions: {
+      departureTime: new Date(1337675679473)},
+    };
+    console.log(i);
+    var directionsService = new google.maps.DirectionsService();
+    directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      console.log("p");
+      var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      directionsDisplay.setDirections(response);
+      directionsDisplay.setMap(iMap);
+      a.push(directionsDisplay);
+      var route = response.routes[0];
+      route0 = response.routes;
+      var summaryPanel = document.getElementById('markList');*/
+    /*for(var i=0,imark; imark=myiMarkers[i];i++){
+      google.maps.event.addListener(imark,'click',function(){
+          orMarkers.push(this);
+          if(orMarkers.length>1){
+            var path = new google.maps.Polyline({
+            path: [orMarkers[orMarkers.length-1].position,orMarkers[orMarkers.length-2].position],
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+          paths.push(path);
+          path.setMap(iMap);
+        }
+
+      });
+      google.maps.event.addListener(myiMarkers[i], 'mouseover', function() {
+                    preMark = this;
+                    infowindow.setContent(this.title+'</br><span style="font-weight:bold">notes:</span>'+notes[this.zIndex]+'</br><button type="button" id="near" onclick="nearby()">附近</button>');
+                    infowindow.open(iMap, this);
+      });
+    }
+    google.maps.event.addListener(iMap,'rightclick',function(){
+      for(var i=0,imark; imark=myiMarkers[i];i++){
+      google.maps.event.clearListeners(imark,'click');}
+      for(var i=0,imark; imark=myiMarkers[i];i++){
+        google.maps.event.addListener(imark, 'click', function() {
+                    preMark = this;
+                    infowindow.setContent(this.title+'</br><span style="font-weight:bold">notes:</span>'+notes[this.zIndex]+'</br><button type="button" id="near" onclick="nearby()">附近</button>');
+                    infowindow.open(map, this);
+                  });
+      }
+      });*/
+/*    else
+    {
+      infoView.animate({top:"-630px"});
+    }*/
+
+
+});
+
+function fitBoundsFor(markerArray,mapPara)  //按照markerArray中地点，更新地图的可视范围, mapPara参数决定更新哪个地图（map, infoMap, all）
+{
+//确定map显示范围
+  var infoBounds = new google.maps.LatLngBounds();
+  //logVariable(markerArray);
+  for(var i = 0;i < myMarkers.length; i++)
+  {
+      //logVariable(myMarkers[i], 'marker'+i);
+      infoBounds.extend(myMarkers[i].position);
+      window.myMarkers[i].setVisible(true);
+  }
+    //logVariable(infoBounds.isEmpty(),'infoBounds.isEmpty()');
+    if(infoBounds.isEmpty())
+    {
+      iMap.setCenter(new google.maps.LatLng(35.554498,139.6485728));
+    }
+    else
+    {
+      iMap.fitBounds(infoBounds);
+    }
+}
+
+/*-----route------*/
+var route0;
+
+var mode = google.maps.TravelMode.DRIVING
+$("#onfoot").click(function(){
+  mode = google.maps.TravelMode.WALKING;
+  route();
+});
+$("#byBus").click(function(){
+  mode = google.maps.TravelMode.TRANSIT;
+  route2();
+});
+$("#driving").click(function(){  mode = google.maps.TravelMode.DRIVING;
+  route();
+});
+
+
+
+var a=[];
+function route(){
+    var directionsService = new google.maps.DirectionsService();
+    if(a.length!=0){for(; a.length!=0 ;){(a.pop()).setMap(null);}}
+    var start = orMarkers[0].position;
+    var end = orMarkers[orMarkers.length-1].position;
+
+    var waypts = [];
+    for(var i=1,imark; i<orMarkers.length-1; i++){
+      waypts.push({location:orMarkers[i].position, stopover:true});
+    }
+    var request = {
+      origin: start,
+      destination: end,
+      waypoints: waypts,
+      optimizeWaypoints: false,//是否按顺序
+      travelMode: mode,
+      transitOptions: {
+      departureTime: new Date(1337675679473)},
+    }
+    directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      directionsDisplay.setDirections(response);
+      directionsDisplay.setMap(iMap);
+      a.push(directionsDisplay);
+      var route = response.routes[0];
+      route0 = response.routes;
+      var summaryPanel = document.getElementById('markList');
+      summaryPanel.innerHTML = '路線:</br>';
+      // For each route, display summary information.
+      for (var i = 0; i < route.legs.length; i++) {
+        var routeSegment = i + 1;
+        summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment + '</b><br>';
+        summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+        summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+        summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+      }
+    }
+    else{
+      alert("沒有相應交通方式")
+    }
+  });
+}
+
+
+
+function route2(){   
+    //var directionsService = new google.maps.DirectionsService();
+    if(a.length!=0){for(; a.length!=0 ;){(a.pop()).setMap(null);}}
+    var x=1;
+    for(var i=1; i<orMarkers.length; i++){
+      var start = orMarkers[i-1].position;
+      var end = orMarkers[i].position;
+    var request = {
+      origin: start,
+      destination: end,
+      //waypoints: waypts,
+      optimizeWaypoints: false,//是否按顺序
+      travelMode: mode,
+      transitOptions: {
+      departureTime: new Date(1337675679473)},
+    };
+    console.log(i);
+    var directionsService = new google.maps.DirectionsService();
+    directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      console.log("p");
+      var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      directionsDisplay.setDirections(response);
+      directionsDisplay.setMap(iMap);
+      a.push(directionsDisplay);
+      var route = response.routes[0];
+      route0 = response.routes;
+      var summaryPanel = document.getElementById('markList');
+      /*summaryPanel.innerHTML = '路線:</br>';*/
+      // For each route, display summary information.
+
+      for (var j = 0; j < route.legs.length; j++) {
+        summaryPanel.innerHTML += '<b>Route Segment: ' + x++ + '</b><br>';
+        summaryPanel.innerHTML += route.legs[j].start_address + ' to ';
+        summaryPanel.innerHTML += route.legs[j].end_address + '<br>';
+        summaryPanel.innerHTML += route.legs[j].distance.text + '<br><br>';
+      }
+
+    }
+    else{
+      //alert("某段沒有相應交通方式")
+    }
+    });
+  }
+}
+
+
+
+
+
+
+//-----delete Mark有待研究……----------
+function del(m){
+  for(var i=0; i<myMarkers.length; i++){
+    
+    if(myMarkers[i]==m){
+      myMarkers[i].setMap(null);
+      myMarkers.splice(i,1);
+      myiMarkers[i].setMap(null);
+      myiMarkers.splice(i,1);
+
+      if(i==0){paths[0].setMap(null);paths.splice(i,1);}
+      else{
+        if(i==myMarkers.length-1){paths[i-1].setMap(null);paths.splice(i-1,1);}
+        else{
+          paths[i-1].setMap(null);
+          paths[i].setMap(null);
+          paths[i] = new google.maps.Polyline({
+            path: [myMarkers[i-1].position,myMarkers[i].position],
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+          paths[i-1].setMap(map);
+          paths.splice(i,1);
+        }
+          
+      }        //paths.splice(i,1);
+      i=myMarkers.length;
+    }  
+  }
+}
+
+</script>
+
+<style>
+      #target {
+        width: 345px;
+      }
+    </style>
+
+
+
+</html>

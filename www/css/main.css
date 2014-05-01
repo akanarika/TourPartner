@@ -1,0 +1,900 @@
+@charset "utf-8";	/*for chinese charset, change accordingly if use japanese*/
+/* CSS Document */
+body{
+	margin:0;
+	padding:0;
+	width:100%;
+	min-width:600px;
+	height:100%;
+}
+
+#wrapper{
+	height:inherit;
+	width:inherit;
+	min-width:600px;
+	margin:0;
+	border:0;
+	position:relative;
+}
+
+/*-------------------------------------Toolbar on the top--------------------------------------*/
+#headerToolbar {
+	background:url(../img/bg_headerToolbar.png) top left repeat-x;
+	height:62px;
+	width:inherit;
+	min-width:640px;
+	position:fixed;
+	left:0;
+	top:0;
+	z-index:1;
+}
+
+#headerIcon {
+	width:22px;
+	height:22px;
+	cursor:pointer;
+}
+
+div.wrap{
+	width:inherit;
+	height:inherit;
+	margin:0;
+	padding:0;
+	border:0;
+}
+
+/*#logoContainer{
+	float:left;
+	cursor: pointer;
+	line-height: 0;
+	position: relative;
+	left: 10px;
+	top: 9px;
+}
+
+#logo{
+	height: 40px;
+	width: 40px;
+	border: 1px solid #e3e3e3;
+	background: #fff;
+	padding: 0px;
+	
+	-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+}*/
+
+#inputContainer{
+	float:left;
+	position:relative;
+	height:inherit;
+	padding:auto;
+	margin-left:10px;	
+}
+
+.input{
+	background-color: #484d53;
+	border:none;
+	color: #fff;
+	font-family: inherit;
+	font-size: 13px;
+	height: 20px;
+	line-height: 20px;
+	margin: 7px 0px 0px 0px;
+	outline: none;
+	padding: 10px;
+	width: 20px;
+}
+
+.input:hover{
+	background-color:#777e87;
+}
+
+.button{
+	/*-webkit-transition-duration: 0.33s;
+	-webkit-transition-property:background,border,color,opacity,box-shadow;
+	transition-duration: 0.33s;
+	transition-property: background,border,color,opacity,box-shadow;
+	text-shadow: rgba(0, 0, 0, 0.1) 0 -1px 0;
+	cursor: pointer;
+	padding: 0 10px;
+	text-align: center;
+	text-transform: uppercase;
+	
+	background: -webkit-linear-gradient(top, #a7e300, #99d100);
+	
+	-webkit-box-shadow: rgba(255, 255, 255, 0.5) 0 0 2px 0px;
+	box-shadow: rgba(255, 255, 255, 0.5) 0 0 2px 0px;
+	
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	border: 1px solid #1681b0;
+	display: inline-block;*/
+
+	cursor: pointer;
+    background: #141f2d;
+    border:none;/*改变样式*/
+    outline: none;
+	margin: 0;
+	position: relative;
+	top: 6px;
+	height: 42px;
+	width: 42px;
+}
+
+
+#searchtitle{   /*加的东西*/
+	float:left;
+	margin-left:30px;
+	padding-top: 3px;
+	font:Arial, Helvetica, sans-serif;
+	color:#fff;
+}
+
+#location{
+	margin-top: 10px;
+	margin-left:0px;
+	width: 320px;
+}
+
+#locationToolContainer{
+	float:right;
+	position:relative;
+	height:inherit;
+	padding:auto;
+	margin-right:30px;	
+}
+
+#hiddenImgs{
+	position:fixed;
+}
+
+#backBtn,#forwardBtn,#showMarkedBtn,#linkBtn{
+	background: linear-gradient(to bottom, #3fb3da 1%, #22a8d4 2%, #148bc5 100%);
+	border: 1px solid #0071b1;
+	top:9px;
+}
+
+/*-------------------------------------Map Display--------------------------------------*/
+#mapview {
+	position: fixed;
+	top: 60px;
+	height:inherit;
+	/*width:680px;*/
+}
+
+#mapCanvas {
+	height:inherit;
+	width:inherit;
+	z-index:-10000;
+}
+
+/*-------------------------------------Info Display--------------------------------------*/
+#infoView {
+	position:fixed;
+	top:-630px;
+	height:650px;
+	left:95px;
+	width:1250px;
+	z-index:0;
+}
+
+#infoOpt {
+	margin-top:55px;
+	border-top:0px;
+	background-color: #141f2d;
+	height: 635px;
+	width:200px;
+	float:left;
+	opacity: 0.85;
+}
+
+#marklist {
+	font-weight: bold;
+	font-size: 20px;
+}
+
+#infoBody { 
+	border:3px solid #141f2d;
+	position:relative;
+	height:685px;
+	width:1040px;
+	float:left;	
+}
+
+#infoMap {
+	position:relative;
+	height:630px;
+	width:1380px;
+	margin-left:10px;
+	margin-top:60px;
+}
+
+#infoFooter {
+	position:relative;
+	top:0px;
+	height:60px;
+	width:200px;
+}
+
+#imgTriangle {
+	opacity:0.8;
+	position:relative;
+	margin-left: 69px;		
+}
+
+#imgSCircle {
+	opacity:0.8;
+	position:relative;
+	margin-left: 72px;
+	margin-top: -4px;	
+}
+
+#imgCricle {
+	opacity:0.8;
+	position:relative;
+	margin-left: 60px;
+	margin-top: -3px;
+}
+/*-------------------------------------Infomation-----------------------*/
+#infomation {
+	left: 0px;
+	float: left;
+	z-index: 100;
+	background-color: red;
+	height: 90px;
+	width: 90px;
+}
+/*----------------------------------------------------------------------*/
+/*-------------------------------------Location list and tools on the right--------------------------------------*/
+#mapToolbar {
+	background: rgba(0, 0, 0, 0.2);
+	width:340px;
+	position: relative;
+	float:right;
+	margin-top:60px;
+	margin-right:10px;
+	padding:0px;
+	z-index: 0;
+}
+
+#curLocContainer{
+	margin:0px;
+	position: relative;
+	width:336px;
+	
+	-webkit-box-shadow: inset rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	box-shadow: inset rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	
+}
+
+#curLocCard {
+	background: #fff;
+	position:relative;
+	border: 2px solid #1793c2;
+	border-top:0px;
+	border-radius:0px 0px 3px 3px;
+	margin:0;
+	width: 336px;
+	height:140px;
+}
+
+.titleBackground{
+	position:relative;
+	width:inherit;
+	background: rgba(0, 0, 0, 0.03);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.03);	
+}
+
+#curLocTitle{
+	cursor:pointer;
+	position:relative;
+	line-height: normal;
+	padding:10px;
+	width:230px;
+	min-height:48px;
+}
+
+#curLocDescription{
+	position:relative;
+	line-height: normal;
+	margin: 10px;
+	width:230px;
+	min-height:60px;
+}
+
+.divPinTrue{
+	cursor: pointer;
+	border: 1px solid #cccccc;
+	background: linear-gradient(to bottom, #3fb3da 1%, #22a8d4 2%, #148bc5 100%);
+	-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	display: block;
+	float: right;
+	height: 32px;
+	line-height: 32px;
+	margin:0;
+	padding: 0px;
+	position: absolute;
+	right: 5px;
+	top: 7px;
+	width: 32px;
+}
+
+.divPinTrue_search{
+	cursor: pointer;
+	border: 1px solid #cccccc;
+	background: -webkit-linear-gradient(top, #a7e300, #99d100);
+	-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	display: block;
+	float: right;
+	height: 32px;
+	line-height: 32px;
+	margin:0;
+	padding: 0px;
+	position: absolute;
+	right: 5px;
+	top: 7px;
+	width: 32px;
+}
+
+.divPinFalse{
+	cursor: pointer;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	display: block;
+	float: right;
+	height: 32px;
+	line-height: 32px;
+	margin:0;
+	padding: 0px;
+	position: absolute;
+	right: 5px;
+	top: 7px;
+	width: 32px;
+}
+
+.imgPin{
+	margin:5px;
+	width:22px;
+	height:22px;
+
+}
+
+#locationContainer{
+	position:relative;
+	padding: 0px 10px 1px;
+	margin:0px;
+	position: relative;
+	width:260px;
+	
+	-webkit-box-shadow: inset rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	box-shadow: inset rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+}
+
+.locationList{	
+	list-style:none;
+	position:relative;
+	margin:0;
+	padding:0;
+	border:0;
+	/*display:inline-block;*/
+	/*white-space:nowrap;*/
+}
+
+.locationCard{
+	list-style:none;
+	background: #fff;
+	margin-bottom: 10px;
+	position: relative;
+	width: 320px;
+	height:140px;
+	
+	-webkit-box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px 0px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px 0px;
+	
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	/*display:inline-block;*/
+}
+
+.photoContainer{
+	cursor: pointer;
+	line-height: 0;
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+}
+
+.photo{
+	height: 80px;
+	width: 80px;
+	border: 1px solid #e3e3e3;
+	background: #fff;
+	padding: 3px;
+	
+	-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 0px;
+	
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+}
+
+.titleBlock {
+	cursor:pointer;
+	width: 220px;
+	min-height: 48px;
+	margin: 10px 10px;	
+}
+
+.descBlock {
+	width: 220px;
+	min-height: 60px;
+	margin:10px 10px;
+}
+
+/*----------------infoBox--------------*/
+.infobox {
+  /*background: url(../img/infoboxbg.png) no-repeat;
+  /*color: #fff;
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: arial;
+  width: 88px;
+  height: 30px;*/
+  line-height: 20px;
+  position: absolute;
+
+}
+
+
+/*.infobox .close {
+	background: none repeat scroll 0 0 rgba(20,31,45,0.8);
+	cursor: pointer;
+	float: right;
+	font-size: 17px;
+	height: 22px;
+	line-height: 22px;
+	position: relative;
+	right: 5px;
+	text-align: center;
+	top: 0;
+	width: 22px;
+	color: white;
+}*/
+
+.infobox .close {
+	display: none;
+}
+
+.infobox .content {
+	margin:10px 10px 10px 10px;
+}
+
+.infobox #name{
+	position: absolute;
+	top:25px;
+	left: 25px;
+	color:#cf5a25;
+	font-size: 18px;
+	font-weight: bold;
+	text-decoration: underline;
+	cursor: pointer;
+	margin-bottom: 10px;
+}
+
+.infobox #address,.infobox #notenote{
+	position: absolute;
+	top:55px;
+	left: 25px;
+	color:white;
+	font-size: 10px;
+}
+
+.infobox #notetitle{
+	position: absolute;
+	top:25px;
+	left: 25px;
+	color:#cf5a25;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.infobox #noteedit{
+	position: absolute;
+	top: 50px;
+	left: 10px;
+	margin-left: 10px;
+	padding-left: 10px;
+	width: 180px;
+	height: 50px;
+	background-color: #6d747d;
+	border:none;
+	color: #fff;
+	font-family: inherit;
+	outline: none;
+}
+
+.infobox #noteedit_btn{
+	position: absolute;
+	top: 50px;
+	left: 10px;
+	margin-left: 220px;
+	padding-left: 10px;
+	width: 10px;
+	height: 30px;
+	background-color: #6d747d;
+	border:3px solid white;
+	color: #fff;
+	font-family: inherit;
+	outline: none;
+}
+
+
+#img{
+	position: absolute;
+	left: 240px;
+	top: 23px;
+	cursor: pointer;
+}
+
+#img0{
+	position: absolute;
+	left: 210px;
+	top: 23px;
+	cursor: pointer;
+}
+
+#img5{
+	position: absolute;
+	left: 210px;
+	top: 23px;
+	cursor: pointer;
+}
+
+#img6{
+	position: absolute;
+	left: 180px;
+	top: 23px;
+	cursor: pointer;
+}
+/*-----------------button---------------------*/
+.a-btn{
+    /*background: linear-gradient(top, #a9db80 0%,#96c56f 100%);*/
+    display: inline-block;
+    position: relative;
+    /*border: 1px solid #80ab5d;
+    box-shadow: 
+        0px 1px 1px rgba(255,255,255,0.8) inset, 
+        1px 1px 3px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    /*float: left;
+    clear: both;
+    margin: 10px 0px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease-in-out;
+    -webkit-transition-duration: 0.33s;
+	-webkit-transition-property:background,border,color,opacity,box-shadow;
+	transition-duration: 0.33s;
+	transition-property: background,border,color,opacity,box-shadow;*/
+	
+	text-shadow: rgba(0, 0, 0, 0.1) 0 -1px 0;
+	cursor: pointer;
+	text-align: center;
+	text-transform: uppercase;
+	
+	/*background: -webkit-linear-gradient(top, #a7e300, #99d100);
+	
+	-webkit-box-shadow: rgba(255, 255, 255, 0.5) 0 0 2px 0px;
+	box-shadow: rgba(255, 255, 255, 0.5) 0 0 2px 0px;
+	
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	border: 1px solid #1681b0;
+	display: inline-block;*/
+
+	cursor: pointer;
+    background: #141f2d;
+    border:none;/*改变样式*/
+    outline: none;
+	margin: 0;
+	position: relative;
+	top: 10px;
+	height: 42px;
+	width: 42px;
+}
+.a-btn img{
+    position: absolute;
+    left: 6px;
+    top: 5px;
+  	/*opacity: 0.5;*/
+    transition: all 0.3s ease-in-out;
+    width: 30px;
+    height: 30px;
+}
+.a-btn .a-btn-slide-text{
+	background: #cf5a25;
+    position: absolute;
+    font-family: "STHeiti";
+    font-size: 14px;
+    top: 0;
+    left: 0;
+    color: #fff;
+    opacity: 0;
+    width: 42px;
+    height:42px;
+    padding-top: 3px;
+    /*text-shadow: 0px 2px 2px rgba(200,255,255,0.7);
+    transition: opacity 0.1s ease-in-out;*/
+}
+.a-btn-text{
+    padding-top: 0px;
+    display: block;
+    font-size: 20px;
+
+    text-shadow: 0px -1px 1px #FFFFFF;
+}
+/*.a-btn-text small{
+    display: block;
+    font-size: 1px;
+    letter-spacing: 1px;
+}*/
+
+/*.a-btn-icon-right span{
+    width: 38px;
+    height: 38px;
+    opacity: 0.7;
+    border-radius: 20px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -20px 0px 0px -20px;
+    border: 1px solid rgba(0,0,0,0.5);
+    background: #4e5c50 url(../img/search_pin.png) no-repeat center center;
+    box-shadow: 
+        0px 1px 1px rgba(255,255,255,0.3) inset, 
+        0px 1px 2px rgba(255,255,255,0.5);
+    transition: all 0.3s ease-in-out;
+}*/
+.a-btn:hover{
+    box-shadow: 
+        0px 1px 1px rgba(255,255,255,0.8) inset, 
+        1px 1px 5px rgba(0,0,0,0.4); 
+}
+.a-btn:hover img{
+    transform: scale(10);
+    opacity: 0;
+}
+.a-btn:hover .a-btn-slide-text,
+.a-btn:hover .a-btn-icon-right span{
+    opacity: 1;
+}
+.a-btn:active {
+    position:relative;
+    top:1px;
+    background:#80ab5d;
+    box-shadow:1px 1px 2px rgba(0,0,0,0.4) inset;
+    border-color: #a9db80;
+}
+.a-btn:active .a-btn-icon-right span{
+    transform: scale(1.4);
+}
+
+/*-----------nearby------------*/
+li:hover{
+	color:#000000;
+}
+
+
+/*----cn-button------*/
+.cn-button-clicked{ 
+  border: none;
+  outline: none;
+  background: url(../img/close.png) no-repeat ;
+  background-size: 3.5em 3.5em;
+  text-align: center;
+  font-size: 1.8em;
+  width: 3.5em;
+  height: 3.5em;
+  position: absolute;
+  left: -13px;
+  top: 135px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 11;
+}
+
+.cn-button-notclicked{ /*中间按钮+字after*/
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0);
+  text-align: center;
+  font-size: 1.8em;
+  height: 25px;
+  width: 25px;
+  position: absolute;
+  left: 240px;
+  top: 23px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 11;
+}
+
+#img{
+	position: absolute;
+	left: 240px;
+	top: 23px;
+	cursor: pointer;
+}
+
+#img0{
+	position: absolute;
+	left: 210px;
+	top: 23px;
+	cursor: pointer;
+}
+
+#img1{
+	cursor: pointer;
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -5px;
+    top: 135px;
+	z-index: 11
+}
+
+#img2{
+	cursor: pointer;
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -5px;
+    top: 135px;
+	z-index: 11
+}
+
+#img3{
+	cursor: pointer;
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -5px;
+    top: 135px;
+	z-index: 11
+}
+
+#img4{
+	position: absolute;
+	width: 0;
+    height: 0;
+	left: -80px;
+	top: 70px;
+}
+/*这是附近end*/
+
+/*这是标记*/ 
+#imgbg1{
+	position: absolute;
+	left:10px;
+	top: -68px;
+	z-index: -1;
+}
+#addmarktitle{
+	font-size: 18px;
+	font-weight: bold;
+	color: #cf5a25;
+	position: absolute;
+	left: 25px;
+	top: -59px;
+}
+
+
+#name1{
+	position: absolute;
+	left: 25px;
+	top: -33px;
+	color:#fff;
+}
+
+#note1{
+	position: absolute;
+	left: 25px;
+	top: 0px;
+	color:#fff;
+}
+
+#note1 span{
+	position: absolute;
+}
+
+#nameinput{
+	margin-left: 4px;
+	padding-left: 10px;
+	width: 167px;
+	background-color: #6d747d;
+	border:none;
+	color: #fff;
+	font-family: inherit;
+	outline: none;
+}
+
+#noteinput{
+	position: absolute;
+	left: 38px;
+	margin-left: 13px;
+	padding-left: 10px;
+	width: 165px;
+	height: 65px;
+	background-color: #6d747d;
+	border:none;
+	color: #fff;
+	font-family: inherit;
+	outline: none;
+}
+
+#nameinput:hover{
+	background-color:#969fac;
+}
+
+#noteinput:hover{
+	background-color:#969fac;
+}
+
+#save-button{
+	position:absolute;
+	top:80px;
+	left:110px;
+	width: 65px;
+	height:35px;
+	background-color: rgba(255,255,255,0);
+	border-color:#fff;
+	border-radius: 10px;
+	color: #fff;
+	outline: none;
+}
+
+#save-button:hover{
+	background-color: #cf5a25;
+	border-color:#cf5a25;
+}
+
+#cancel-button{
+	position:absolute;
+	top:80px;
+	left:190px;
+	width: 65px;
+	height:35px;
+	background-color: rgba(255,255,255,0);
+	border-color:#fff;
+	border-radius: 10px;
+	color: #fff;
+	outline: none;
+}
+
+#cancel-button:hover{
+	background-color: #cf5a25;
+	border-color:#cf5a25;
+}
+
+.markcontent{
+	visibility: hidden;
+}
+/*这是标记end*/
+
+.markcontent2{
+	visibility: visible;
+}
+
+.infocontent2{
+	visibility: hidden;
+}
