@@ -315,7 +315,7 @@ function mark(){
       preMark = new google.maps.Marker({
           icon: markIcon,
           map: map,
-          note: [""],
+          note: [],
           position: position,
           title: "自定義地點",
           content: '<div class="infocontent2">'+'<img src="img/infoboxbg.png" id="imgbg">'+'<img src="img/near.png" id="img">'+'<img src="img/pin.png" id="img0" onclick="">'+
@@ -354,16 +354,12 @@ function mark(){
           preMark.title = $("#nameinput").attr("value");
           console.log(preMark.title);
           note = $("#noteinput").attr("value");
-          if(note!="")preMark.note[0] = note;
+          if(note!="")preMark.note.push(note);
           preMark.content = 
                         
                         '<div class="infocontent">'
                         +
-
-
                         '<div class="cn-wrapper" id="cn-wrapper">'+
-
-
                       '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
 
                        '<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
@@ -375,18 +371,8 @@ function mark(){
 
                       '<img src="img/edit.png" id="img5" onclick="">'+
                       '<img src="img/delete.png" id="img6" onclick="">'+
-                      '<div id="notetitle">' +preMark.title+'</div>' + '<div id="notenote">Note: '+preMark.note+'</div>'+
-                      '</div>'+
 
-                      '<div class="markcontent">'
-
-                      +'<img src="img/infoboxbg1.png" id="imgbg1">'
-                      +'<div id="addmarktitle">EDIT MY MARK</div>'
-                      +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ preMark.title +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="'+'">'+preMark.note+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
-
-
-
-                      '</div>';
+                      '<div id="notetitle">' +preMark.title+'</div>' + '<div id="notenote">Note: '+preMark.note+'</div>'+'</div>'+'<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ preMark.note +'">'+'<button id="noteedit_btn" class="noteedit" style="visibility:hidden"></button>'+'</div>'+'</div>';
 
           myMarkers.push(preMark);
           var inewmarker = new google.maps.Marker({
@@ -462,7 +448,7 @@ function mark(){
           preMark = new google.maps.Marker({
                       icon: markIcon,
                       map: map,
-                      note: [""],
+                      note: [],
                       position: this.position,
                       title: this.title,
                       zIndex: 99,
@@ -475,7 +461,7 @@ function mark(){
 
                     +'<img src="img/infoboxbg1.png" id="imgbg1">'
                     +'<div id="addmarktitle">ADD MY MARK</div>'
-                    +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ this.title +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="'+this.note+'"">'+""+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
+                    +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ this.title +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+""+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
 
                       //zIndex: index
           });
@@ -541,11 +527,7 @@ function mark(){
                       '<img src="img/delete.png" class="notecontent" id="img6" onclick="">'+
 
                       '<div id="notetitle" class="notecontent" >' +preMark.title+'</div>' + '<div id="notenote" class="notecontent" >Note: '+preMark.note+'</div>'+'</div>'+
-                      '<div class="markcontent">'
-
-                      +'<img src="img/infoboxbg1.png" id="imgbg1">'
-                      +'<div id="addmarktitle">EDIT MY MARK</div>'
-                      +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ preMark.title +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="'+'">'+preMark.note+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
+                      '<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ preMark.note +'">'+'<button id="noteedit_btn"  class="noteedit" style="visibility:hidden"></button>'+'</div>'
                       ;
 
           myMarkers.push(preMark);
@@ -715,11 +697,7 @@ function markend(){
                       '<img class="notecontent" src="img/delete.png" id="img6" onclick="">'+
 
                       '<div class="notecontent" id="notetitle">' +this.title+'</div>' + '<div class="notecontent" id="notenote">Note: '+this.note+'</div>'+'</div>'+
-                      '<div class="markcontent">'
-
-                      +'<img src="img/infoboxbg1.png" id="imgbg1">'
-                      +'<div id="addmarktitle">EDIT MY MARK</div>'
-                      +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ this.title +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="'+'">'+this.note+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>'
+                      '<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ this.note +'">'+'<button id="noteedit_btn" class="noteedit" style="visibility:hidden"></button>'+'</div>'
 
                     });
                   });
@@ -744,7 +722,7 @@ function markthis(){
           var newMark = new google.maps.Marker({
                       icon: markIcon,
                       map: map,
-                      note: [""],
+                      note: [],
                       position: preMark.position,
                       title: preMark.title,
                       content: preMark.content
@@ -755,7 +733,7 @@ function markthis(){
           newMark.title = $("#nameinput").attr("value");
           console.log(preMark.title);
           note = $("#noteinput").attr("value");
-          if(note!="")newMark.note[0] = note;
+          if(note!="")newMark.note.push(note);
           newMark.content = 
                         
                          '<div class="infocontent">'+
@@ -775,11 +753,7 @@ function markthis(){
                        '<div class="notecontent">'+
                       '<div id="notetitle">' +newMark.title+'</div>' + '<div id="notenote">Note: '+newMark.note+'</div>'+'</div>'+'<input type="text" style="visibility:hidden" id="noteedit" class="nameinput" placeholder="" value="'+ newMark.note +'">'
                       +'</div>'+
-                      '<div class="markcontent">'
-
-                      +'<img src="img/infoboxbg1.png" id="imgbg1">'
-                      +'<div id="addmarktitle">EDIT MY MARK</div>'
-                      +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ newMark.title +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="'+'">'+newMark.note+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'+'</div>';
+                      '<input type="text" style="visibility:hidden" id="noteedit" class="noteedit" placeholder="" value="'+ preMark.note +'">'+'<button id="noteedit_btn" class="noteedit" style="visibility:hidden"></button>'+'</div>';
 
           myMarkers.push(newMark);
 
@@ -1069,19 +1043,13 @@ $(document).delegate("#img0","click", function(){
 });
 
 $(document).delegate("#img5","click", function(){
-  $(".notecontent").css(
-    'visibility','hidden');
-  $(".markcontent").css(
-    'visibility','visible');
-  /*$("#noteedit").css(
+  $("#noteedit").css(
       'visibility','visible');
   $("#noteedit_btn").css(
       'visibility','visible');
   $("#notenote").css(
-      'visibility','hidden');*/
+      'visibility','hidden');
 });
-
-
 
 $(document).delegate("#noteedit_btn","click", function(){
   for(var i=0, imark; imark = myMarkers[i]; i++){
