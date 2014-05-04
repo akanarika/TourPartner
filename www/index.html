@@ -1325,6 +1325,7 @@ $("#infoFooter").click(function() {   //小地图下拉
 var linkOpen;
 var last;
 var next;
+var a = [];//路线对象的数组;
 $("#link").click(function() {   //小地图下拉
     var infoView = $("#infoView");
     if(infoView.css("top") < "0")
@@ -1391,14 +1392,18 @@ $("#link").click(function() {   //小地图下拉
                     text+="<div>---车次: "+line.short_name+","+step.transit.num_stops+"站</div>";//);
                     //$('#our-panel').append(
                       text+="<div>---运营方: <a href='"+line.agencies[0].name+"'>"+line.agencies[0].url+"</a></div>";//);
-                  }
-                      
-                  
+                  }      
+                
                 }
-                insRow(text);   
-                var steps = route.steps;  //分段路程
-                console.log(steps);
-                for( var i = 0; i < steps.length; i++)
+                var routeObj = new Object();
+                routeObj.index = a.length;
+                routeObj.rt = directionsDisplay;
+                routeObj.text = text;
+                a.push(routeObj);
+                insRow(routeObj);   
+                //var steps = route.steps;  //分段路程
+                //console.log(steps);
+               /* for( var i = 0; i < steps.length; i++)
                 {
                   var step = steps[i];
                   
@@ -1414,7 +1419,7 @@ $("#link").click(function() {   //小地图下拉
                   }
         
     
-  }
+                  }*/
 
   var end_addr = route.end_address; //终点
   $('#our-panel').append("<div><strong>终点: </strong>"+end_addr+"</div>");
@@ -1541,7 +1546,7 @@ $("#driving").click(function(){  mode = google.maps.TravelMode.DRIVING;
 
 
 
-var a=[];
+
 function route(){
     var directionsService = new google.maps.DirectionsService();
     if(a.length!=0){for(; a.length!=0 ;){(a.pop()).setMap(null);}}
@@ -1566,7 +1571,8 @@ function route(){
       var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
       directionsDisplay.setDirections(response);
       directionsDisplay.setMap(iMap);
-      a.push(directionsDisplay);
+      //a.push(directionsDisplay);
+
       var route = response.routes[0];
       route0 = response.routes;
       var summaryPanel = document.getElementById('markList');
@@ -1676,32 +1682,35 @@ function route2(){
 
 <script type="text/javascript">
 
-function insRow(text)
+function insRow(obj)
   {
   $("td #locpoint").removeClass("cur").addClass("nocur");      
   var i=document.getElementById('end').rowIndex
   var x=document.getElementById('myTable').insertRow(i)
+  x.id = obj.index;
   var y=x.insertCell(0)
-  y.innerHTML="<td><button id=\"open\" name=\"0\">open</button><div class=\"path\"><div class=\"traffic-type\"></div><div class=\"traffic-panel\" style='height:50px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;'>"+text+"</div></div><div class=\"cur\"id=\"locpoint\" onclick=\"deleteRow(this)\"></div></td>";
+  y.innerHTML="<td><button id=\"open\" name=\"0\">open</button><div class=\"path\"><div class=\"traffic-type\"></div><div class=\"traffic-panel\" style='height:50px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;'id='rt"+obj.index+"'>"+obj.text+"</div></div><div class=\"cur\"id=\"locpoint\" onclick=\"deleteRow(this)\"></div></td>";
 
 
-  $(".path").animate({
-    height:"86px"
-  },200);
+    $(".path").animate({
+      height:"86px"
+    },200);
        
   }
 
-function deleteRow(r)
-  {
-  var i=r.parentNode.parentNode.rowIndex
-  document.getElementById('myTable').deleteRow(i)
-
+function deleteRow(r){
+  var i = r.parentNode.parentNode.id;
+  document.getElementById('myTable').deleteRow(parseInt(i)+1);
+  a[i].rt.setMap(null);
+  a.splice(i,1);
    $(".path").animate({
     height:"96px"
   },200);
-  }
+}
 
-$(document).delegate('#open', 'click', function() {
+
+
+$(document).delegate('#open', 'click', function(){
   if($("button").attr("name")=="0")
 {
     $(this).siblings('.path').animate({

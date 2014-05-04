@@ -1,0 +1,45 @@
+.nocur{
+	background: url(../img/circle_pin.png) no-repeat;
+	width: 20px;
+	height:20px;
+}
+
+.cur{
+	background: url(../img/circle_small.png) no-repeat;
+	width: 20px;
+	height:20px;
+}
+
+.traffic-type{
+	background: url(../img/bus.png) no-repeat;
+	width: 96px;
+	height:96px;
+	cursor: pointer;
+}
+
+.traffic-panel{
+	width:252px;
+	height: 0px;
+	border: 2px solid #eaedf1;
+	position: relative;
+	left: 30px;
+	display: none;
+}
+
+.path-first,.path{
+	width: 245px;
+	border-left: 2px solid #eaedf1;
+	margin: 0 80px 0 8px;
+}
+
+.path-first{
+	height: 26px;
+}
+
+.path{
+	height: 96px;
+}
+
+#open{
+	position: relative;
+}

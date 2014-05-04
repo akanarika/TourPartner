@@ -1,0 +1,13 @@
+1.深色的圆点表示当前选择的地点，点击可以删除该地点和和上一个地点之间
+的乘车信息
+2.点击open打开交通信息，再次点击缩回（可用relative 定位）
+
+【bug:缩回的时候如果不用display：none即使height：0px也会有边框，但
+用了display:none就没有缩回效果】
+
+【bug：删除时深色的点不会跳回上一个地点】
+
+浅色的点：.nocur #locpoint
+深色的点：.cur #locpoint
+.path包含 图标车(.traffic-type )和交通信息框（.traffic-panel)
+按钮open:  #open
