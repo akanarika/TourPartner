@@ -65,11 +65,11 @@
         <!-- <button type="button" id="onfoot" style="height:50px; width:50px; margin:20px 5px 20px 5px">步行！</button>
         <button type="button" id="byBus" style="height:50px; width:50px; margin:20px 5px 20px 5px">乘車！</button>
         <button type="button" id="driving" style="height:50px; width:50px; margin:20px 5px 20px 5px">駕車！</button> -->
-        <div id="markList" type="text" style="height:540px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;">路線: </br>
+        <div id="markList" type="text" style="height:540px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;"></br>
 
         <table id="myTable" border="0">
         <tr id="start">
-          <td><div class="cur" id="locpoint"></div></td>
+          <td><div class="cur" id="locpoint"></div><div id="startname"></div><br /><div id="startplace"></div></td>
         </tr>
         <tr id="end">
           <td>
@@ -408,7 +408,8 @@ function mark(){
                       icon: markIcon,
                       map: iMap,
                       position: position,
-                      title: preMark.title
+                      title: preMark.title,
+                      //note: preMark.note
                       //zIndex: index
           });
           myiMarkers.push(inewmarker);
@@ -569,7 +570,8 @@ function mark(){
                       icon: markIcon,
                       map: iMap,
                       position: preMark.position,
-                      title: preMark.title
+                      title: preMark.title,
+                      //note: preMark.note
                       //zIndex: index
           });
 
@@ -713,7 +715,6 @@ function markend(){
                       latlng:this.getPosition(),
                       map:map,
                       content:
-                       
 
                       '<div class="infocontent">'+
 
@@ -802,7 +803,8 @@ function markthis(){
                       icon: markIcon,
                       map: iMap,
                       position: preMark.position,
-                      title: preMark.title
+                      title: preMark.title,
+                      //note: preMark.note
                       //zIndex: index
             });
 
@@ -1344,7 +1346,8 @@ $("#link").click(function() {   //小地图下拉
     if(linkOpen = true){
       for(var i=0; imark = myiMarkers[i]; i++){
       google.maps.event.addListener(imark,'click',function(){
-        if(last == null){last = this;}
+        if(last == null){last = this;document.getElementById("startname").innerHTML += this.title;for(var i=0; imark=myMarkers[i];i++){if(this.title==imark.title)document.getElementById("startplace").innerHTML+="<div class=\"startnote\" id=\""+ i +"note\">"+imark.note+"</div><div class=\"infonote\" id=\""+imark.title+"\"><div>";}
+          }
         else{
             next = this;
             var request = {
@@ -1399,6 +1402,18 @@ $("#link").click(function() {   //小地图下拉
                 routeObj.index = a.length;
                 routeObj.rt = directionsDisplay;
                 routeObj.text = text;
+                routeObj.start = last.title;
+                routeObj.end = next.title;
+                routeObj.dis = route.distance.text;
+                routeObj.dur = route.duration.text;
+
+                for(var i=0; imark = myMarkers[i]; i++){
+                  if(last.title==imark.title){
+                    routeObj.note = imark.note;
+                    routeObj.i = i;
+                  }
+                }
+                
                 a.push(routeObj);
                 insRow(routeObj);   
                 //var steps = route.steps;  //分段路程
@@ -1689,14 +1704,52 @@ function insRow(obj)
   var x=document.getElementById('myTable').insertRow(i)
   x.id = obj.index;
   var y=x.insertCell(0)
-  y.innerHTML="<td><button id=\"open\" name=\"0\">open</button><div class=\"path\"><div class=\"traffic-type\"></div><div class=\"traffic-panel\" style='height:50px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;'id='rt"+obj.index+"'>"+obj.text+"</div></div><div class=\"cur\"id=\"locpoint\" onclick=\"deleteRow(this)\"></div></td>";
+  y.innerHTML="<td><div class=\"path\"><hr class=\"line\" /><button id=\"open\" name=\"0\">open</button><!--<button id=\"open\" name=\"0\"></button>--><div class=\"traffic-type\"></div><div id=\"disandtime\">"+obj.dis+obj.dur+"</div><div class=\"traffic-panel\" style='height:50px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;'id='rt"+obj.index+"'>"+obj.text+"</div></div><div class=\"cur\"id=\"locpoint\" onclick=\"deleteRow(this)\"></div><div id=\"endtxt\">"+obj.end+"</div><br /><div class=\"notetxt\" id=\""+obj.i+"note\">"+obj.note+"</div><div class=\"infonote\" id=\""+obj.end+"\"><div>"+"</td>";
 
 
     $(".path").animate({
       height:"86px"
     },200);
-       
+
+
+
+
+  //this.
+  
+
+}
+
+var n;
+var markname;
+$(document).delegate('.infonote', 'click', function(){
+var noteadd = "";
+markname = this.id;
+for(var i=0; imark=myMarkers[i]; i++){
+if(markname==imark.title){
+n = i;}
+//console.log("this"+$(this).id);
+//markname = $(this).id;}
+//console.log(i);
+}
+$(this).after("<input type=\"text\" id=\"infonoteadd\"></input>"+"<button id=\"infonotesave\"></button>");
+$(document).undelegate("#infonotesave", "click");
+$(document).delegate("#infonotesave", "click", function(){
+if($("#infonoteadd").attr("value")!=""){
+  noteadd = $("#infonoteadd").attr("value");
+  for(var j=0; imark=myMarkers[j];j++){
+    //myMarkers[n].note.push(noteadd);
+    if(markname==imark.title){
+      myMarkers[j].note.push(noteadd);
+      console.log(myMarkers[j]);
+    }
   }
+}
+$(this).prev().prev().prev().append(","+noteadd);
+$(this).prev().remove();
+$(this).remove();
+});
+
+});
 
 function deleteRow(r){
   var i = r.parentNode.parentNode.id;
@@ -1707,6 +1760,8 @@ function deleteRow(r){
     height:"96px"
   },200);
 }
+
+
 
 
 

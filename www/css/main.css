@@ -902,27 +902,46 @@ li:hover{
 }
 
 /*-----------marklist@infomap------------*/
+
+#myTable{
+	width: 200px;
+
+}
+
 .nocur{
-	background: url(../img/circle_pin.png) no-repeat;
+	background: url(../img/circle_small_white.png) no-repeat;
 	width: 20px;
 	height:20px;
+	float:left;
 }
 
 .cur{
-	background: url(../img/circle_small.png) no-repeat;
+	background: url(../img/circle_small_org.png) no-repeat;
 	width: 20px;
 	height:20px;
+	float:left;
+}
+
+.line{
+	width: 120px;
+	margin-left: 8px;
+}
+
+tbody{
+	width: 200px;
 }
 
 .traffic-type{
 	background: url(../img/bus.png) no-repeat;
-	width: 96px;
-	height:96px;
+	width: 45px;/*66px;*/
+	height:45px;/*96px;*/
+	background-size: 100%;
 	cursor: pointer;
+	float:left;
 }
 
 .traffic-panel{
-	width:252px;
+	width:200px;
 	height: 0px;
 	border: 2px solid #eaedf1;
 	position: relative;
@@ -932,7 +951,7 @@ li:hover{
 }
 
 .path-first,.path{
-	width: 245px;
+	width: 120px;
 	border-left: 2px solid #eaedf1;
 	margin: 0 80px 0 8px;
 }
@@ -947,4 +966,36 @@ li:hover{
 
 #open{
 	position: relative;
+	background: url(../img/triangle_down.png) no-repeat;
+	width: 20px;
+	height: 20px;
+	float:right;
+}
+
+
+#startname, #starttxt, #endtxt{
+	display: inline;
+	float: left;
+	color:white;
+	font-size: 16px;
+}
+
+#disandtime{
+	float: left;
+	font-size: 12px;
+	color:white;
+}
+
+.startnote, .notetxt{
+	font-size:12px;
+	color:white;
+	float: left;
+}
+
+.infonote{
+	background: url(../img/edit.png);
+	width: 15px;
+	height: 15px;
+	background-size: 100%;
+	float: left;
 }
