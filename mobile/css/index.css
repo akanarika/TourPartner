@@ -1,7 +1,7 @@
 #date{
 	position: absolute;
 	top: 20px;
-	left: -45px;
+	left: -75px;
 }
 
 #datebtn{
@@ -21,4 +21,16 @@ background-color:#14152d;
 
 .ui-body-f{
 color:black;
+}
+
+/*这是open按钮*/
+#open{
+  background: url(../img/down.png) no-repeat;
+  width: 16px;
+  height: 10px;
+  position: relative;
+  left:8px;
+  top:5px;
+  border: none;
+  outline: none;
 }
