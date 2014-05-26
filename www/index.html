@@ -33,7 +33,7 @@
                  --><!-- <button class="button" id="searchBtn" type="button">
                 	<img class="headerIcon" id="searchLoc" src="img/searchIcon.png">
                 </button> --><!--<input id="address" class="input" type="textbox" value="Sydney, NSW"> -->
-                <input id="location" class="input" type="textbox">
+                <input id="location" class="input" type="textbox" placeholder="输入城市、目的地或景点">
                 <div id="show"></div>
                 <!-- <button class = "button" id="search_btn">
                   <img id="search" src="img/searchIcon.png">
@@ -65,7 +65,7 @@
         <!-- <button type="button" id="onfoot" style="height:50px; width:50px; margin:20px 5px 20px 5px">步行！</button>
         <button type="button" id="byBus" style="height:50px; width:50px; margin:20px 5px 20px 5px">乘車！</button>
         <button type="button" id="driving" style="height:50px; width:50px; margin:20px 5px 20px 5px">駕車！</button> -->
-        <div id="markList" type="text" style="height:540px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;"></br>
+        <div id="markList" type="text" style="height:630px;/*OVERFLOW-X:auto;OVERFLOW:scroll;*/"></br>
 
         <table id="myTable" border="0">
         <tr id="start">
@@ -79,7 +79,7 @@
         </tr>
         </table>
         <br />
-        <input type="button" onclick="insRow()" value="add place">
+        <!--<input type="button" onclick="insRow()" value="add place">-->
 
         </div>
       </div>
@@ -141,7 +141,7 @@
     var infocontent = $(".infocontent");
 
     var oldmark;
-    
+    var addopen = false;
 
     function initialize(){
             var myLatlng = new google.maps.LatLng(-34.397, 150.644);
@@ -178,6 +178,7 @@
             map.fitBounds(defaultBounds);
 
             var input = (document.getElementById('location'));
+
             //var searchBox = new google.maps.places.SearchBox((input));
 
             /*---autocomplete----*/
@@ -192,7 +193,6 @@
               window.places = searchBox.getPlaces();
 
               
-
               // For each place, get the icon, place name, and location.
 
               for (var i = 0, marker; marker = markers[i]; i++) {
@@ -332,7 +332,7 @@ function mark(){
           map: map,
           note: [""],
           position: position,
-          title: "自定義地點",
+          title: "请输入地名",
           content: '<div class="infocontent2">'+'<img src="img/infoboxbg.png" id="imgbg">'+'<img src="img/near.png" id="img">'+'<img src="img/pin.png" id="img0" onclick="">'+
 
                     '<div class="cn-wrapper" id="cn-wrapper">'+'<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+'<img src="img/shopping.png" id="img1">'+'<img src="img/hotel.png" id="img2">'+'<img src="img/restaurant.png" id="img3">'+'<img src="img/circle1.png" id="img4">'+'</div>'
@@ -344,7 +344,7 @@ function mark(){
 
                     +'<img src="img/infoboxbg1.png" id="imgbg1">'
                     +'<div id="addmarktitle">ADD MY MARK</div>'
-                    +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ '自定义地点' +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'
+                    +'<div id="name1">Name:<input type="text" id="nameinput" class="nameinput" placeholder="" value="'+ '请输入地名' +'"></div><div id="note1">'+'<span>Note:'+'</span>' +'<textarea type="text" id="noteinput" class="noteinput" value="">'+'</textarea>'+'</div>'+'<button type="button" class="save-button" id="save-button">Save</button>'+'<button type="button" class="cancel-button" id="cancel-button" >Cancel</button>'+'</div>'
           //zIndex: index
       });
 
@@ -409,9 +409,16 @@ function mark(){
                       map: iMap,
                       position: position,
                       title: preMark.title,
-                      //note: preMark.note
+                      note: preMark.note[0]
                       //zIndex: index
           });
+		  
+		  ///////////////////////////////////////add by wu//////////////////////////////////////////
+		  google.maps.event.addListener(inewmarker, "click", function () {
+			 map.setCenter(inewmarker.position); 
+		  });		  
+		  //////////////////////////////////////////////////////////////////////////////////////////
+		  
           myiMarkers.push(inewmarker);
 
           
@@ -503,7 +510,7 @@ function mark(){
           window.infoBox = new InfoBox({
             latlng:preMark.position,
              map:map,
-            content:preMark.content
+            content:preMark.content,
           });
 
           //$(".markcontent").css('visibility','visible');
@@ -539,7 +546,7 @@ function mark(){
           preMark.title = $("#nameinput").attr("value");
           console.log(preMark.title);
           note = $("#noteinput").attr("value");
-          if(note!="")preMark.note.push(note);
+          if(note!="")preMark.note[0]=note;
           preMark.content = 
                         
                         '<div class="infocontent">'+
@@ -571,10 +578,17 @@ function mark(){
                       map: iMap,
                       position: preMark.position,
                       title: preMark.title,
+                      note: preMark.note[0]
                       //note: preMark.note
                       //zIndex: index
           });
 
+		  ///////////////////////////////////////add by wu//////////////////////////////////////////
+		  google.maps.event.addListener(inewmarker, "click", function () {
+			 map.setCenter(inewmarker.position); 
+		  });		  
+		  //////////////////////////////////////////////////////////////////////////////////////////
+		  
           myiMarkers.push(inewmarker);
           places.splice(i,1);
           markers.splice(i,1);
@@ -804,9 +818,15 @@ function markthis(){
                       map: iMap,
                       position: preMark.position,
                       title: preMark.title,
-                      //note: preMark.note
+                      note: newMark.note[0]
                       //zIndex: index
             });
+
+		  ///////////////////////////////////////add by wu//////////////////////////////////////////
+		  google.maps.event.addListener(inewmarker, "click", function () {
+			 map.setCenter(inewmarker.position); 
+		  });		  
+		  //////////////////////////////////////////////////////////////////////////////////////////
 
           myiMarkers.push(inewmarker);
           //places.splice(i,1);
@@ -976,7 +996,7 @@ var nearRequest = null;
 $(document).delegate("#img1","click",function(){
   //nearRequest = 
   nearclose($("#cn-button"));
-  nearRequest = 'shopping';
+  nearRequest = 'natural_feature';//改为景点
   nearby();
 });
 $(document).delegate("#img2","click",function(){
@@ -1107,8 +1127,6 @@ $(document).delegate("#noteedit_btn","click", function(){
       
       imark.content = 
                         '<div class="infocontent">'+
-
-
                         '<div class="cn-wrapper" id="cn-wrapper">'+
                       '<button type="button" class="cn-button-notclicked" id="cn-button" ></button>'+
                       
@@ -1338,7 +1356,7 @@ $("#link").click(function() {   //小地图下拉
     for(var i=0; i<myiMarkers.length;i++){
       google.maps.event.addListener(myiMarkers[i], 'mouseover', function() {
                     preMark = this;
-                    infowindow.setContent(this.title);
+                    infowindow.setContent("<b>"+this.title+"</b><br>"+this.note);
                     infowindow.open(iMap, this);
       });
     }
@@ -1368,6 +1386,16 @@ $("#link").click(function() {   //小地图下拉
               //panel: document.getElementById("markList")});
               directionsDisplay.setDirections(response);
               directionsDisplay.setMap(iMap);
+			  
+			  /////////////////////////////////add by wu////////////////////////////////
+			  var directionsDisplay2 = new google.maps.DirectionsRenderer({suppressMarkers: true,
+              preserveViewport: true,
+              suppressInfoWindows: true});
+              directionsDisplay2.setDirections(response);
+              directionsDisplay2.setMap(map);
+			  //////////////////////////////////////////////////////////////////////////			  
+
+              //directionsDisplay.setMap(map);
               //a.push(directionsDisplay);
               var route = response.routes[0];
               route0 = response.routes;
@@ -1587,6 +1615,12 @@ function route(){
       directionsDisplay.setDirections(response);
       directionsDisplay.setMap(iMap);
       //a.push(directionsDisplay);
+	  
+	  /////////////////////add by wu//////////////////////////
+  	  var directionsDisplay2 = new google.maps.DirectionsRenderer({suppressMarkers: true});  
+      directionsDisplay2.setDirections(response);
+      directionsDisplay2.setMap(iMap);
+	  ////////////////////////////////////////////////////////
 
       var route = response.routes[0];
       route0 = response.routes;
@@ -1602,7 +1636,7 @@ function route(){
       }
     }
     else{
-      alert("沒有相應交通方式")
+      alert("沒有相應交通方式");
     }
   });
 }
@@ -1630,10 +1664,19 @@ function route2(){
     directionsService.route(request, function(response, status) {
     if (status == google.maps.DirectionsStatus.OK) {
       console.log("p");
+	  
       var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
       directionsDisplay.setDirections(response);
       directionsDisplay.setMap(iMap);
-      a.push(directionsDisplay);
+      //directionsDisplay.setMap(map);
+ 	  a.push(directionsDisplay);
+	  
+	  ////////////////add by wu///////////////////     
+      var directionsDisplay2 = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      directionsDisplay2.setDirections(response);
+      directionsDisplay.setMap(map);
+	  ///////////////////////////////////////////
+
       var route = response.routes[0];
       route0 = response.routes;
       var summaryPanel = document.getElementById('markList');
@@ -1704,7 +1747,7 @@ function insRow(obj)
   var x=document.getElementById('myTable').insertRow(i)
   x.id = obj.index;
   var y=x.insertCell(0)
-  y.innerHTML="<td><div class=\"path\"><hr class=\"line\" /><button id=\"open\" name=\"0\">open</button><!--<button id=\"open\" name=\"0\"></button>--><div class=\"traffic-type\"></div><div id=\"disandtime\">"+obj.dis+obj.dur+"</div><div class=\"traffic-panel\" style='height:50px; WIDTH: 97%;OVERFLOW-X:auto;OVERFLOW:scroll;'id='rt"+obj.index+"'>"+obj.text+"</div></div><div class=\"cur\"id=\"locpoint\" onclick=\"deleteRow(this)\"></div><div id=\"endtxt\">"+obj.end+"</div><br /><div class=\"notetxt\" id=\""+obj.i+"note\">"+obj.note+"</div><div class=\"infonote\" id=\""+obj.end+"\"><div>"+"</td>";
+  y.innerHTML="<td><div class=\"path\"><hr class=\"line\" /><button id=\"open\" name=\"0\"></button><div class=\"traffic-type\"></div><div id=\"disandtime\">"+obj.dis+obj.dur+"</div><div class=\"traffic-panel\" style='height:50px; OVERFLOW-X:auto;OVERFLOW:scroll;'id='rt"+obj.index+"'>"+obj.text+"</div></div><div class=\"cur\"id=\"locpoint\" onclick=\"deleteRow(this)\"></div><div id=\"endtxt\">"+obj.end+"</div><br /><div class=\"notetxt\" id=\""+obj.i+"note\">"+obj.note+"</div><div class=\"infonote\" id=\""+obj.end+"\"><div>"+"</td>";
 
 
     $(".path").animate({
@@ -1719,35 +1762,44 @@ function insRow(obj)
 
 }
 
-var n;
+
 var markname;
 $(document).delegate('.infonote', 'click', function(){
-var noteadd = "";
-markname = this.id;
-for(var i=0; imark=myMarkers[i]; i++){
-if(markname==imark.title){
-n = i;}
-//console.log("this"+$(this).id);
-//markname = $(this).id;}
-//console.log(i);
-}
-$(this).after("<input type=\"text\" id=\"infonoteadd\"></input>"+"<button id=\"infonotesave\"></button>");
-$(document).undelegate("#infonotesave", "click");
-$(document).delegate("#infonotesave", "click", function(){
-if($("#infonoteadd").attr("value")!=""){
-  noteadd = $("#infonoteadd").attr("value");
-  for(var j=0; imark=myMarkers[j];j++){
-    //myMarkers[n].note.push(noteadd);
-    if(markname==imark.title){
-      myMarkers[j].note.push(noteadd);
-      console.log(myMarkers[j]);
+    var noteadd = "";
+    markname = this.id;
+    /*for(var i=0; imark=myMarkers[i]; i++){
+      if(markname==imark.title){n = i;}
+      //console.log("this"+$(this).id);
+      //markname = $(this).id;}
+      //console.log(i);
+    }*/
+    var q=0;
+    for(j=0; imark=myMarkers[j];j++){
+        //myMarkers[n].note.push(noteadd);
+        if(markname==imark.title){
+          q=j;
+          //myMarkers[j].note[0]=noteadd;//.push(noteadd);
+          //console.log(myMarkers[j]);
+          }
     }
-  }
-}
-$(this).prev().prev().prev().append(","+noteadd);
-$(this).prev().remove();
-$(this).remove();
-});
+    if(addopen!=true){
+    $(this).after("<input type=\"text\" id=\"infonoteadd\" value=\""+myMarkers[q].note+"\"></input>"+"<button id=\"infonotesave\">√</button>");
+    addopen = true;
+
+    $(document).undelegate("#infonotesave", "click");
+    
+      $(document).delegate("#infonotesave", "click", function(){
+      addopen = false;
+      if($("#infonoteadd").attr("value")!=""){
+      noteadd = $("#infonoteadd").attr("value");
+      myMarkers[q].note[0]=noteadd;
+      }
+    
+    $(this).prev().prev().prev().html(noteadd);//append(""+noteadd);
+    $(this).prev().remove();
+    $(this).remove();
+    });
+    }
 
 });
 
@@ -1768,30 +1820,37 @@ function deleteRow(r){
 $(document).delegate('#open', 'click', function(){
   if($("button").attr("name")=="0")
 {
-    $(this).siblings('.path').animate({
+    $(this).parent('.path').animate({
       height:"290px"
     },300);
-  $(this).siblings('.path').find(".traffic-panel").animate({
+  $(this).siblings('.traffic-panel').animate({
      height:"179px"
   },300);
-  $(this).siblings('.path').find(".traffic-panel").css({
+  $(this).siblings('.traffic-panel').css({
      "display":"block"
   });
   $("#open").attr("name","1");
+  $(this).css({
+    "background":"url(img/up.png) no-repeat"
+  });
 }
 else{
-    $(this).siblings('.path').animate({
+    $(this).parent('.path').animate({
       height:"96px"
     },300);
-  $(this).siblings('.path').find(".traffic-panel").animate({
+  $(this).siblings('.traffic-panel').animate({
      height:"0px"
   },300);
-  $(this).siblings('.path').find(".traffic-panel").css({
+  $(this).siblings('.traffic-panel').css({
      "display":"none"
   });
   $("#open").attr("name","0");
+  $(this).css({
+    "background":"url(img/down.png) no-repeat"
+  })
 }
 });
+
 
 
 </script>
